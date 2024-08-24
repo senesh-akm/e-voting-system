@@ -5,18 +5,17 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class AuditLog extends Model
+class Constituency extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'action',
-        'description',
-        'user_id',
+        'name',
+        'district_id',
     ];
 
-    public function user()
+    public function district()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(District::class);
     }
 }

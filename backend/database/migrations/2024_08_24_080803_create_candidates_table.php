@@ -13,10 +13,10 @@ return new class extends Migration
     {
         Schema::create('candidates', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('election_id')->constrained()->onDelete('cascade');
-            $table->string('name', 100);
-            $table->string('party', 100)->nullable();
+            $table->string('name');
+            $table->string('party');
             $table->text('biography')->nullable();
+            $table->foreignId('election_id')->constrained()->onDelete('cascade');
             $table->timestamps();
         });
     }
