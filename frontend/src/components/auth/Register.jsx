@@ -8,6 +8,7 @@ const Register = () => {
   const [voterId, setVoterId] = useState("");
   const [role, setRole] = useState("voter");
   const [message, setMessage] = useState("");
+  const [isError, setIsError] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -20,18 +21,29 @@ const Register = () => {
         role,
       });
       setMessage(response.data.message);
+      setIsError(false); // Set to false on success
     } catch (error) {
       setMessage("Registration failed");
+      setIsError(true); // Set to true on error
     }
   };
 
   return (
     <div className="max-w-md mx-auto mt-10">
-      <h1 className="mb-5 text-2xl font-bold">Register</h1>
-      {message && <p className="mb-4 text-red-500">{message}</p>}
+      <h1 className="mb-5 text-2xl font-bold">Create a new user account</h1>
+      {message && (
+        <div
+          className={`p-4 mb-4 text-sm rounded ${
+            isError ? "bg-red-200 text-red-400" : "bg-green-200 text-green-400"
+          }`}
+          role="alert"
+        >
+          {message}
+        </div>
+      )}
       <form onSubmit={handleSubmit} className="px-8 pt-6 pb-8 mb-4 bg-white rounded shadow-md">
         <div className="mb-4">
-          <label className="block mb-2 text-sm font-bold text-gray-700" htmlFor="name">
+          <label className="block mb-2 text-sm text-left text-gray-700" htmlFor="name">
             Name
           </label>
           <input
@@ -43,7 +55,7 @@ const Register = () => {
           />
         </div>
         <div className="mb-4">
-          <label className="block mb-2 text-sm font-bold text-gray-700" htmlFor="email">
+          <label className="block mb-2 text-sm text-left text-gray-700" htmlFor="email">
             Email
           </label>
           <input
@@ -55,7 +67,7 @@ const Register = () => {
           />
         </div>
         <div className="mb-4">
-          <label className="block mb-2 text-sm font-bold text-gray-700" htmlFor="password">
+          <label className="block mb-2 text-sm text-left text-gray-700" htmlFor="password">
             Password
           </label>
           <input
@@ -67,7 +79,7 @@ const Register = () => {
           />
         </div>
         <div className="mb-4">
-          <label className="block mb-2 text-sm font-bold text-gray-700" htmlFor="voterId">
+          <label className="block mb-2 text-sm text-left text-gray-700" htmlFor="voterId">
             Voter ID
           </label>
           <input
@@ -79,7 +91,7 @@ const Register = () => {
           />
         </div>
         <div className="mb-4">
-          <label className="block mb-2 text-sm font-bold text-gray-700" htmlFor="role">
+          <label className="block mb-2 text-sm text-left text-gray-700" htmlFor="role">
             Role
           </label>
           <select
@@ -95,7 +107,7 @@ const Register = () => {
         <div className="flex items-center justify-between">
           <button
             type="submit"
-            className="px-4 py-2 font-bold text-white bg-blue-500 rounded hover:bg-blue-700 focus:outline-none focus:shadow-outline"
+            className="w-full px-4 py-1 text-white bg-blue-500 rounded hover:bg-blue-700 focus:outline-none focus:shadow-outline"
           >
             Register
           </button>
