@@ -2,6 +2,11 @@
   text-align: center;
 }
 
+.flex-grow {
+  margin-left: 0; /* Ensure there's no extra margin */
+  padding-left: 0; /* Ensure there's no extra padding */
+}
+
 .App-logo {
   height: 40vmin;
   pointer-events: none;
