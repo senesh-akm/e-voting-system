@@ -63,7 +63,7 @@ const Login = () => {
         <div className="flex items-center justify-between">
           <button
             type="submit"
-            className="w-full px-4 py-1 text-white bg-blue-500 rounded w-fil w hover:bg-blue-700 focus:outline-none focus:shadow-outline"
+            className="w-full px-4 py-1 text-white bg-blue-500 rounded w-fil hover:bg-blue-700 focus:outline-none focus:shadow-outline"
           >
             Login
           </button>
