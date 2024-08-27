@@ -28,6 +28,8 @@ class AuthController extends Controller
             'role' => 'voter', // default role
         ]);
 
+        $user = Auth::user();
+
         // Return a success message
         return response()->json([
             'message' => 'User registered successfully',
