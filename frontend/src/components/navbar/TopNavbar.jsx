@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 
 const TopNavbar = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [user, setUser] = useState(null);  // State to hold the user information
   const dropdownRef = useRef(null);
   
   const toggleDropdown = () => {
@@ -19,6 +20,27 @@ const TopNavbar = () => {
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
+  }, []);
+
+  // Fetch user information when the component mounts
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        // Assume the user data is stored in local storage after login
+        const userData = JSON.parse(localStorage.getItem('user'));
+        console.log('Fetched user data:', userData); // Debugging statement
+
+        if (userData && userData.name) {
+          setUser(userData);
+        } else {
+          console.warn("User data is not available or does not contain a name.");
+        }
+      } catch (error) {
+        console.error("Failed to fetch user data:", error);
+      }
+    };
+
+    fetchUserData();
   }, []);
 
   return (
@@ -39,7 +61,7 @@ const TopNavbar = () => {
             alt="Profile"
             className="w-8 h-8 rounded-full"
           />
-          <span className="hidden md:inline">User Name</span>
+          <span className="hidden md:inline">{user ? user.name : 'User Name'}</span>
           <svg
             className="w-4 h-4"
             fill="none"

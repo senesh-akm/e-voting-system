@@ -10,26 +10,41 @@ const Login = () => {
   const [isError, setIsError] = useState(false);
   const navigate = useNavigate();
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleLogin = async (email, password) => {
     try {
       const response = await axios.post("http://localhost:8000/api/login", {
         email,
         password,
         rememberMe,
       });
-      setMessage(response.data.message);
-      setIsError(false); // Set to false on success
-      navigate("/dashboard");
+
+      if (response.status === 200) {
+        const { user } = response.data;
+        // Save the user data to local storage
+        localStorage.setItem('user', JSON.stringify(user));
+        // Optionally, redirect or update state as needed
+        setMessage(response.data.message);
+        setIsError(false); // Set to false on success
+        navigate("/dashboard");
+      } else {
+        setMessage("Login failed");
+        setIsError(true);
+      }
     } catch (error) {
       setMessage("Login failed");
       setIsError(true); // Set to true on error
+      console.error("Error during login:", error);
     }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    await handleLogin(email, password);
   };
 
   return (
     <div className="max-w-md mx-auto mt-10">
-      <h1 className="mb-5 text-2xl font-bold">Login</h1>
+      <h1 className="mb-5 text-2xl text-center font-bold">Login</h1>
       {message && (
         <div
           className={`p-4 mb-4 text-sm rounded ${
@@ -70,7 +85,7 @@ const Login = () => {
             <input
               type="checkbox"
               checked={rememberMe}
-              onChange={(e) => setRememberMe(e.target.checked)} // Handle checkbox change
+              onChange={(e) => setRememberMe(e.target.checked)}
               className="mr-2 leading-tight"
             />
             <span className="text-sm text-gray-700">Remember Me</span>
