@@ -14,7 +14,7 @@ class DistrictController extends Controller
         return response()->json($districts);
     }
 
-    // Add a new party
+    // Add a new district
     public function store(Request $request)
     {
         $request->validate([
