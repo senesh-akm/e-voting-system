@@ -48,7 +48,7 @@ const Login = ({ setUserRole }) => {
       <h1 className="mb-5 text-2xl text-center font-bold">Login</h1>
       {message && (
         <div
-          className={`p-4 mb-4 text-sm rounded ${
+          className={`p-4 mb-4 text-sm text-center rounded ${
             isError ? "bg-red-200 text-red-400" : "bg-green-200 text-green-400"
           }`}
           role="alert"

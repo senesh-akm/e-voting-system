@@ -8,6 +8,7 @@ import Logout from "./components/auth/Logout";
 import Dashboard from "./components/Dashboard";
 import TopNavbar from "./components/navbar/TopNavbar";
 import LeftSideNavbar from "./components/navbar/LeftSideNavbar";
+import Parties from "./components/Party";
 
 const AppLayout = ({ children }) => {
   const location = useLocation();
@@ -49,6 +50,7 @@ const App = () => {
           <Route path="/register" element={<Register />} />
           <Route path="/logout" element={<Logout setMessage={setMessage} />} />
           <Route path="/dashboard" element={<Dashboard userRole={userRole} />} />
+          <Route path="/parties" element={<Parties />} />
         </Routes>
 
         {/* Message Display */}
