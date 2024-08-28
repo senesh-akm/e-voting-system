@@ -25,7 +25,7 @@ class AuthController extends Controller
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'voter_id' => $request->voter_id,
-            'role' => 'voter', // default role
+            'role' => $request->role,
         ]);
 
         $user = Auth::user();

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
-const Login = () => {
+const Login = ({ setUserRole }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
@@ -22,9 +22,10 @@ const Login = () => {
         const { user } = response.data;
         // Save the user data to local storage
         localStorage.setItem('user', JSON.stringify(user));
-        // Optionally, redirect or update state as needed
+        // Update the userRole state in App component
+        setUserRole(user.role);  // Update userRole state after login
         setMessage(response.data.message);
-        setIsError(false); // Set to false on success
+        setIsError(false); 
         navigate("/dashboard");
       } else {
         setMessage("Login failed");
@@ -32,7 +33,7 @@ const Login = () => {
       }
     } catch (error) {
       setMessage("Login failed");
-      setIsError(true); // Set to true on error
+      setIsError(true);
       console.error("Error during login:", error);
     }
   };

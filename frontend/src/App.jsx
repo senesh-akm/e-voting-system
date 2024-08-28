@@ -1,6 +1,6 @@
 import './App.css';
 import './index.css';
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { BrowserRouter as Router, Route, Routes, useLocation } from "react-router-dom";
 import Register from "./components/auth/Register";
 import Login from "./components/auth/Login";
@@ -30,15 +30,25 @@ const AppLayout = ({ children }) => {
 
 const App = () => {
   const [message, setMessage] = useState("");
+  const [userRole, setUserRole] = useState("");
+
+  useEffect(() => {
+    // Fetch user data from local storage on initial load
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      const parsedUser = JSON.parse(storedUser);
+      setUserRole(parsedUser.role);
+    }
+  }, []);
 
   return (
     <Router>
       <AppLayout>
         <Routes>
-          <Route path="/" element={<Login />} />
+          <Route path="/" element={<Login setUserRole={setUserRole} />} /> {/* Pass setUserRole to Login */}
           <Route path="/register" element={<Register />} />
           <Route path="/logout" element={<Logout setMessage={setMessage} />} />
-          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/dashboard" element={<Dashboard userRole={userRole} />} />
         </Routes>
 
         {/* Message Display */}
