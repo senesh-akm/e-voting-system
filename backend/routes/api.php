@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ConstituencyController;
 use App\Http\Controllers\DistrictController;
+use App\Http\Controllers\ElectionController;
 use App\Http\Controllers\PartyController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -27,3 +28,8 @@ Route::post('/districts', [DistrictController::class, 'store']);
 // Constituency Module
 Route::get('/constituencies', [ConstituencyController::class, 'index']);
 Route::post('/constituencies', [ConstituencyController::class, 'store']);
+
+// Election Module
+Route::get('/elections', [ElectionController::class, 'index']);
+Route::post('/elections', [ElectionController::class, 'store']);
+Route::put('/elections/{id}', [ElectionController::class, 'update']);

@@ -11,6 +11,7 @@ import LeftSideNavbar from "./components/navbar/LeftSideNavbar";
 import Parties from "./components/Party";
 import District from './components/District';
 import Constituency from "./components/Constituency";
+import Election from './components/Election';
 
 const AppLayout = ({ children }) => {
   const location = useLocation();
@@ -55,6 +56,8 @@ const App = () => {
           <Route path="/parties" element={<Parties />} />
           <Route path="/districts" element={<District />} />
           <Route path="/constituencies" element={<Constituency />} />
+          <Route path="/elections" element={<Election />} />
+
         </Routes>
 
         {/* Message Display */}
