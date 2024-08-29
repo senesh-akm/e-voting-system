@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ConstituencyController;
 use App\Http\Controllers\DistrictController;
 use App\Http\Controllers\PartyController;
 use Illuminate\Http\Request;
@@ -22,3 +23,7 @@ Route::post('/parties', [PartyController::class, 'store']);
 // District Module
 Route::get('/districts', [DistrictController::class, 'index']);
 Route::post('/districts', [DistrictController::class, 'store']);
+
+// Constituency Module
+Route::get('/constituencies', [ConstituencyController::class, 'index']);
+Route::post('/constituencies', [ConstituencyController::class, 'store']);
