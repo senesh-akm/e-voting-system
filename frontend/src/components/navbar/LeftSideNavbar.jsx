@@ -3,7 +3,7 @@ import { Link } from "react-router-dom"; // Import Link from react-router-dom
 
 const LeftSideNavbar = () => {
   return (
-    <div className="flex flex-col w-64 h-full px-4 py-8 bg-gray-100 border-r">
+    <div className="fixed flex flex-col w-64 h-full px-4 py-8 bg-gray-100 border-r">
       {/* Sidebar Header */}
       <div className="flex items-center justify-center mb-6">
         <div className="text-xl font-bold text-blue-500">
