@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CandidateController;
 use App\Http\Controllers\ConstituencyController;
 use App\Http\Controllers\DistrictController;
 use App\Http\Controllers\ElectionController;
@@ -33,3 +34,10 @@ Route::post('/constituencies', [ConstituencyController::class, 'store']);
 Route::get('/elections', [ElectionController::class, 'index']);
 Route::post('/elections', [ElectionController::class, 'store']);
 Route::put('/elections/{id}', [ElectionController::class, 'update']);
+
+// Candidate Module
+Route::get('/elections/{election_id}/candidates', [CandidateController::class, 'index']);
+Route::get('/candidates', [CandidateController::class, 'all']);
+Route::post('/candidates', [CandidateController::class, 'store']);
+Route::put('/candidates/{id}', [CandidateController::class, 'update']);
+Route::delete('/candidates/{id}', [CandidateController::class, 'destroy']);

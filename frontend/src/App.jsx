@@ -12,6 +12,7 @@ import Parties from "./components/Party";
 import District from './components/District';
 import Constituency from "./components/Constituency";
 import Election from './components/Election';
+import Candidate from './components/Candidate';
 
 const AppLayout = ({ children }) => {
   const location = useLocation();
@@ -57,7 +58,7 @@ const App = () => {
           <Route path="/districts" element={<District />} />
           <Route path="/constituencies" element={<Constituency />} />
           <Route path="/elections" element={<Election />} />
-
+          <Route path="/candidates" element={<Candidate />} />
         </Routes>
 
         {/* Message Display */}
