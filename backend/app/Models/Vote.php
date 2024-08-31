@@ -13,8 +13,8 @@ class Vote extends Model
         'user_id',
         'candidate_id',
         'election_id',
-        'district_id',
-        'constituency_id'
+        'district',
+        'constituency'
     ];
 
     public function user()
