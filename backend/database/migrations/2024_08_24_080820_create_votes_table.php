@@ -16,6 +16,8 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->foreignId('candidate_id')->constrained()->onDelete('cascade');
             $table->foreignId('election_id')->constrained()->onDelete('cascade');
+            $table->string('district');
+            $table->string('constituency');
             $table->timestamps();
         });
     }
