@@ -13,6 +13,8 @@ class Vote extends Model
         'user_id',
         'candidate_id',
         'election_id',
+        'district',
+        'constituency'
     ];
 
     public function user()
@@ -28,5 +30,15 @@ class Vote extends Model
     public function election()
     {
         return $this->belongsTo(Election::class);
+    }
+
+    public function district()
+    {
+        return $this->belongsTo(District::class);
+    }
+
+    public function constituency()
+    {
+        return $this->belongsTo(Constituency::class);
     }
 }
