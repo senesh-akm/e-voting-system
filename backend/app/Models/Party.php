@@ -11,6 +11,7 @@ class Party extends Model
 
     protected $fillable = [
         'name',
+        'party_logo'
     ];
 
     public function candidates()
