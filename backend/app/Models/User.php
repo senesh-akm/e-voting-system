@@ -18,6 +18,11 @@ class User extends Authenticatable
         'password',
         'voter_id',
         'role',
+        'profile_picture',
+        'nic',
+        'address',
+        'district',
+        'constituency',
     ];
 
     protected $hidden = [

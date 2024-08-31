@@ -18,6 +18,11 @@ return new class extends Migration
             $table->string('password');
             $table->string('voter_id')->unique();
             $table->enum('role', ['voter', 'admin'])->default('voter');
+            $table->string('profile_picture')->nullable();
+            $table->string('nic')->unique();
+            $table->string('address')->nullable();
+            $table->string('district')->nullable();
+            $table->string('constituency')->nullable();
             $table->timestamps();
         });
 
