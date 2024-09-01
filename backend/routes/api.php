@@ -22,6 +22,8 @@ Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanc
 // Party Module
 Route::get('/parties', [PartyController::class, 'index']);
 Route::post('/parties', [PartyController::class, 'store']);
+Route::get('/parties/{id}', [PartyController::class, 'find']);
+Route::put('/parties/{id}', [PartyController::class, 'update']);
 
 // District Module
 Route::get('/districts', [DistrictController::class, 'index']);
