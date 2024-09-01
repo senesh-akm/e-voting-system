@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
+    // Register new users
     public function register(Request $request)
     {
         // Validate the request data
@@ -17,7 +18,18 @@ class AuthController extends Controller
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8',
             'voter_id' => 'required|string|unique:users',
+            'role' => 'required|string|in:voter,admin',
+            'profile_picture' => 'nullable|file|max:2048',
+            'nic' => 'nullable|string',
+            'address' => 'nullable|string',
+            'district' => 'nullable|string',
+            'constituency' => 'nullable|string',
         ]);
+
+        // Handle the image upload
+        if ($request->hasFile('profile_picture')) {
+            $validated['profile_picture'] = $request->file('profile_picture')->store('images', 'public');
+        }
 
         // Create a new user
         $user = User::create([
@@ -26,9 +38,12 @@ class AuthController extends Controller
             'password' => Hash::make($request->password),
             'voter_id' => $request->voter_id,
             'role' => $request->role,
+            'profile_picture' => $request->profile_picture ?? '',
+            'nic' => $request->nic ?? '',
+            'address' => $request->address ?? '',
+            'district' => $request->district ?? '',
+            'constituency' => $request->constituency ?? '',
         ]);
-
-        $user = Auth::user();
 
         // Return a success message
         return response()->json([
@@ -37,6 +52,7 @@ class AuthController extends Controller
         ], 201);
     }
 
+    // User login
     public function login(Request $request)
     {
         // Validate the request data
@@ -60,6 +76,48 @@ class AuthController extends Controller
         ]);
     }
 
+    // Update user
+    public function update(Request $request, $id)
+    {
+        // Validate the request data
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users,email,' . $id,
+            'password' => 'required|string|min:8',
+            'voter_id' => 'required|string|unique:users,voter_id,' . $id,
+            'role' => 'required|string|in:voter,admin',
+            'profile_picture' => 'nullable|string',
+            'nic' => 'nullable|string',
+            'address' => 'nullable|string',
+            'district' => 'nullable|string',
+            'constituency' => 'nullable|string',
+        ]);
+
+        // Find the user or fail
+        $user = User::findOrFail($id);
+
+        // Update user
+        $user->update([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+            'voter_id' => $request->voter_id,
+            'role' => $request->role,
+            'profile_picture' => $request->profile_picture ?? '',
+            'nic' => $request->nic ?? '',
+            'address' => $request->address ?? '',
+            'district' => $request->district ?? '',
+            'constituency' => $request->constituency ?? '',
+        ]);
+
+        // Return a success message
+        return response()->json([
+            'message' => 'User updated successfully',
+            'user' => $user,
+        ], 200);
+    }
+
+    // Logout user
     public function logout()
     {
         // Log out the user
