@@ -9,6 +9,21 @@ use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
+    // Fetch user data
+    public function profile()
+    {
+        // Retrieve the authenticated user
+        $user = Auth::profile();
+
+        // Check if user is authenticated
+        if (!$user) {
+            return response()->json(['message' => 'User not authenticated'], 401);
+        }
+
+        // Return user data as JSON response
+        return response()->json($user);
+    }
+
     // Register new users
     public function register(Request $request)
     {
@@ -28,7 +43,7 @@ class AuthController extends Controller
 
         // Handle the image upload
         if ($request->hasFile('profile_picture')) {
-            $validated['profile_picture'] = $request->file('profile_picture')->store('images', 'public');
+            $validated['profile_picture'] = $request->file('profile_picture')->store('profile_pictures', 'public');
         }
 
         // Create a new user
