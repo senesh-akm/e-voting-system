@@ -13,7 +13,7 @@ class AuthController extends Controller
     public function profile()
     {
         // Retrieve the authenticated user
-        $user = Auth::user();
+        $user = Auth::profile();
 
         // Check if user is authenticated
         if (!$user) {
