@@ -11,6 +11,7 @@ const Candidate = () => {
     party: '',
     biography: '',
     election_id: '',
+    candidate_picture: null, // Added field for image
   });
   const [isEditing, setIsEditing] = useState(false);
 
@@ -56,13 +57,29 @@ const Candidate = () => {
     }));
   };
 
+  const handleFileChange = (e) => {
+    setFormData((prev) => ({
+      ...prev,
+      candidate_picture: e.target.files[0], // Handle file input
+    }));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const data = new FormData();
+    data.append('name', formData.name);
+    data.append('party', formData.party);
+    data.append('biography', formData.biography);
+    data.append('election_id', formData.election_id);
+    if (formData.candidate_picture) {
+      data.append('candidate_picture', formData.candidate_picture); // Append image if it exists
+    }
+  
     try {
       if (isEditing) {
-        await axios.put(`http://localhost:8000/api/candidates/${formData.id}`, { ...formData });
+        await axios.put(`http://localhost:8000/api/candidates/${formData.id}`, data); // Use PUT for editing
       } else {
-        await axios.post('http://localhost:8000/api/candidates', { ...formData });
+        await axios.post('http://localhost:8000/api/candidates', data); // Use POST for creating
       }
       fetchCandidates();
       resetForm();
@@ -78,6 +95,7 @@ const Candidate = () => {
       party: candidate.party,
       biography: candidate.biography,
       election_id: candidate.election_id,
+      candidate_picture: null, // Reset the picture when editing
     });
     setIsEditing(true);
   };
@@ -98,6 +116,7 @@ const Candidate = () => {
       party: '',
       biography: '',
       election_id: '',
+      candidate_picture: null, // Reset file input
     });
     setIsEditing(false);
   };
@@ -114,6 +133,12 @@ const Candidate = () => {
           placeholder="Name"
           className="p-2 border mb-2 w-full"
           required
+        />
+        <input
+          type="file"
+          name="candidate_picture"
+          onChange={handleFileChange}
+          className="p-2 border mb-2 w-full"
         />
         <select
           name="party"
@@ -161,18 +186,41 @@ const Candidate = () => {
       </form>
 
       <h2 className="text-xl font-bold mb-4">Candidate List</h2>
+      <p>Total Registered Candidates: {candidates.length}</p> {/* Display the candidate count */}
       <ul className="space-y-2">
         {candidates.map((candidate) => (
-          <li key={candidate.id} className="border p-4 rounded bg-white shadow relative">
-            <h3 className="text-lg font-semibold">{candidate.name}</h3>
-            <p>Party: {candidate.party}</p>
-            <p>{candidate.biography}</p>
-            <button onClick={() => handleEdit(candidate)} className="bg-yellow-500 text-white px-4 py-2 rounded absolute top-2 right-16 mr-7">
-              Edit
-            </button>
-            <button onClick={() => handleDelete(candidate.id)} className="bg-red-500 text-white px-4 py-2 rounded absolute top-2 right-2">
-              Delete
-            </button>
+          <li key={candidate.id} className="border p-4 rounded bg-white shadow relative flex items-center">
+            {/* Image */}
+            {candidate.candidate_picture && (
+              <img
+                src={`http://localhost:8000/storage/${candidate.candidate_picture}`}
+                alt="Candidate"
+                className="w-24 h-24 object-cover mr-4" // Image class for styling
+              />
+            )}
+            
+            {/* Candidate details */}
+            <div className="flex-1">
+              <h3 className="text-lg font-semibold">{candidate.name}</h3>
+              <h4 className="text-m font-semibold">Party: {candidate.party}</h4>
+              <p className="line-clamp-3">{candidate.biography}</p>
+            </div>
+
+            {/* Edit and Delete buttons */}
+            <div className="flex space-x-2 absolute top-2 right-2">
+              <button
+                onClick={() => handleEdit(candidate)}
+                className="bg-yellow-500 text-white px-4 py-2 rounded"
+              >
+                Edit
+              </button>
+              <button
+                onClick={() => handleDelete(candidate.id)}
+                className="bg-red-500 text-white px-4 py-2 rounded"
+              >
+                Delete
+              </button>
+            </div>
           </li>
         ))}
       </ul>
