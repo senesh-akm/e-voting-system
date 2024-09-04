@@ -26,6 +26,12 @@ const LeftSideNavbar = () => {
           <span className="mx-4 font-medium">Profile</span>
         </Link>
         <Link
+          to="/votes"
+          className="flex items-center px-4 py-2 text-gray-600 transition-colors duration-200 transform rounded-md hover:bg-blue-200 hover:text-blue-500"
+        >
+          <span className="mx-4 font-medium">Voting</span>
+        </Link>
+        <Link
           to="/parties"
           className="flex items-center px-4 py-2 text-gray-600 transition-colors duration-200 transform rounded-md hover:bg-blue-200 hover:text-blue-500"
         >
