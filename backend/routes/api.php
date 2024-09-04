@@ -6,6 +6,7 @@ use App\Http\Controllers\ConstituencyController;
 use App\Http\Controllers\DistrictController;
 use App\Http\Controllers\ElectionController;
 use App\Http\Controllers\PartyController;
+use App\Http\Controllers\VoteController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -18,7 +19,7 @@ Route::post('/register', [AuthController::class, 'register']);
 Route::put('/update/{id}', [AuthController::class, 'update']);
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
-Route::get('/profile', [AuthController::class, 'profile'])->middleware('auth:sanctum');
+// Route::get('/profile', [AuthController::class, 'profile'])->middleware('auth:sanctum');
 
 // Party Module
 Route::get('/parties', [PartyController::class, 'index']);
@@ -45,3 +46,6 @@ Route::get('/candidates', [CandidateController::class, 'all']);
 Route::post('/candidates', [CandidateController::class, 'store']);
 Route::put('/candidates/{id}', [CandidateController::class, 'update']);
 Route::delete('/candidates/{id}', [CandidateController::class, 'destroy']);
+
+// Vote Module
+Route::post('/votes', [VoteController::class, 'store']);

@@ -14,6 +14,7 @@ import Constituency from "./components/Constituency";
 import Election from './components/Election';
 import Candidate from './components/Candidate';
 // import Profile from './components/auth/Profile';
+import Vote from './components/Vote';
 
 const AppLayout = ({ children }) => {
   const location = useLocation();
@@ -61,6 +62,7 @@ const App = () => {
           <Route path="/elections" element={<Election />} />
           <Route path="/candidates" element={<Candidate />} />
           {/* <Route path="/profile" element={<Profile />} /> */}
+          <Route path="/votes" element={<Vote />} />
         </Routes>
 
         {/* Message Display */}
