@@ -1,196 +1,317 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 
 const Profile = () => {
-    const [user, setUser] = useState({
-        name: '',
-        email: '',
-        password: '',
-        voter_id: '',
-        role: '',
-        profile_picture: '',
-        nic: '',
-        address: '',
-        district: '',
-        constituency: ''
-    });
+  const [user, setUser] = useState({});
+  const [isEditing, setIsEditing] = useState(false);
+  const [districts, setDistricts] = useState([]);
+  const [constituencies, setConstituencies] = useState([]);
+  const [selectedDistrict, setSelectedDistrict] = useState('');
+  const [imagePreview, setImagePreview] = useState(null);
+  const [selectedImage, setSelectedImage] = useState(null);
 
-    const [profilePicture, setProfilePicture] = useState(null);
-    const [message, setMessage] = useState('');
+  // Fetch user data from local storage
+  useEffect(() => {
+    const fetchUserData = () => {
+      try {
+        const userData = JSON.parse(localStorage.getItem('user'));
+        console.log('Fetched user data:', userData); // Debugging statement
 
-    useEffect(() => {
-        // Fetch user details on component mount
-        axios.get('/api/profile', {
-            headers: {
-                Authorization: `Bearer ${localStorage.getItem('token')}` // Assuming token is stored in localStorage
-            }
-        })
-        .then(response => {
-            setUser(response.data.user);
-        })
-        .catch(error => {
-            console.error('There was an error fetching the user data!', error);
-        });
-    }, []);
-
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        setUser({ ...user, [name]: value });
-    };
-
-    const handleFileChange = (e) => {
-        setProfilePicture(e.target.files[0]);
-    };
-
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        
-        const formData = new FormData();
-        formData.append('name', user.name);
-        formData.append('email', user.email);
-        formData.append('password', user.password);
-        formData.append('voter_id', user.voter_id);
-        formData.append('role', user.role);
-        if (profilePicture) {
-            formData.append('profile_picture', profilePicture);
+        if (userData && userData.name) {
+          setUser(userData);
+          setSelectedDistrict(userData.district || '');
+        } else {
+          console.warn("User data is not available or does not contain a name.");
         }
-        formData.append('nic', user.nic);
-        formData.append('address', user.address);
-        formData.append('district', user.district);
-        formData.append('constituency', user.constituency);
-
-        axios.put(`/api/update/${user.id}`, formData, {
-            headers: {
-                'Content-Type': 'multipart/form-data',
-                Authorization: `Bearer ${localStorage.getItem('token')}`
-            }
-        })
-        .then(response => {
-            setMessage('Profile updated successfully!');
-        })
-        .catch(error => {
-            console.error('There was an error updating the profile!', error);
-            setMessage('There was an error updating the profile.');
-        });
+      } catch (error) {
+        console.error("Failed to fetch user data:", error);
+      }
     };
 
-    return (
-        <div className="max-w-xl mx-auto mt-10 p-5">
-            <h2 className="text-2xl font-bold mb-6">User Profile</h2>
-            {message && <div className="mb-4 p-4 bg-blue-100 text-blue-800 rounded">{message}</div>}
-            <form onSubmit={handleSubmit}>
-                <div className="mb-4">
-                    <label className="block text-gray-700">Name</label>
-                    <input
-                        type="text"
-                        name="name"
-                        value={user.name}
-                        onChange={handleChange}
-                        className="mt-1 p-2 block w-full border border-gray-300 rounded"
-                        required
-                    />
-                </div>
-                <div className="mb-4">
-                    <label className="block text-gray-700">Email</label>
-                    <input
-                        type="email"
-                        name="email"
-                        value={user.email}
-                        onChange={handleChange}
-                        className="mt-1 p-2 block w-full border border-gray-300 rounded"
-                        required
-                    />
-                </div>
-                <div className="mb-4">
-                    <label className="block text-gray-700">Password</label>
-                    <input
-                        type="password"
-                        name="password"
-                        value={user.password}
-                        onChange={handleChange}
-                        className="mt-1 p-2 block w-full border border-gray-300 rounded"
-                        required
-                    />
-                </div>
-                <div className="mb-4">
-                    <label className="block text-gray-700">Voter ID</label>
-                    <input
-                        type="text"
-                        name="voter_id"
-                        value={user.voter_id}
-                        onChange={handleChange}
-                        className="mt-1 p-2 block w-full border border-gray-300 rounded"
-                        required
-                    />
-                </div>
-                <div className="mb-4">
-                    <label className="block text-gray-700">Role</label>
-                    <select
-                        name="role"
-                        value={user.role}
-                        onChange={handleChange}
-                        className="mt-1 p-2 block w-full border border-gray-300 rounded"
-                        required
-                    >
-                        <option value="voter">Voter</option>
-                        <option value="admin">Admin</option>
-                    </select>
-                </div>
-                <div className="mb-4">
-                    <label className="block text-gray-700">Profile Picture</label>
-                    <input
-                        type="file"
-                        name="profile_picture"
-                        onChange={handleFileChange}
-                        className="mt-1 block w-full"
-                    />
-                </div>
-                <div className="mb-4">
-                    <label className="block text-gray-700">NIC</label>
-                    <input
-                        type="text"
-                        name="nic"
-                        value={user.nic}
-                        onChange={handleChange}
-                        className="mt-1 p-2 block w-full border border-gray-300 rounded"
-                    />
-                </div>
-                <div className="mb-4">
-                    <label className="block text-gray-700">Address</label>
-                    <input
-                        type="text"
-                        name="address"
-                        value={user.address}
-                        onChange={handleChange}
-                        className="mt-1 p-2 block w-full border border-gray-300 rounded"
-                    />
-                </div>
-                <div className="mb-4">
-                    <label className="block text-gray-700">District</label>
-                    <input
-                        type="text"
-                        name="district"
-                        value={user.district}
-                        onChange={handleChange}
-                        className="mt-1 p-2 block w-full border border-gray-300 rounded"
-                    />
-                </div>
-                <div className="mb-4">
-                    <label className="block text-gray-700">Constituency</label>
-                    <input
-                        type="text"
-                        name="constituency"
-                        value={user.constituency}
-                        onChange={handleChange}
-                        className="mt-1 p-2 block w-full border border-gray-300 rounded"
-                    />
-                </div>
-                <button type="submit" className="w-full py-2 px-4 bg-blue-500 text-white rounded hover:bg-blue-600">
-                    Update Profile
-                </button>
-            </form>
-        </div>
-    );
+    fetchUserData();
+  }, []);
+
+  // Fetch districts from API
+  useEffect(() => {
+    const fetchDistricts = async () => {
+      try {
+        const response = await axios.get('http://localhost:8000/api/districts');
+        setDistricts(response.data); // Assuming response.data is an array of districts
+      } catch (error) {
+        console.error("Failed to fetch districts:", error);
+      }
+    };
+
+    fetchDistricts();
+  }, []);
+
+  // Fetch constituencies based on the selected district
+  useEffect(() => {
+    const fetchConstituencies = async () => {
+      if (selectedDistrict) {
+        try {
+          const response = await axios.get(`http://localhost:8000/api/constituencies?district=${selectedDistrict}`);
+          setConstituencies(response.data); // Assuming response.data is an array of constituencies
+        } catch (error) {
+          console.error("Failed to fetch constituencies:", error);
+        }
+      } else {
+        setConstituencies([]); // Clear constituencies if no district is selected
+      }
+    };
+
+    fetchConstituencies();
+  }, [selectedDistrict]);
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setUser({
+      ...user,
+      [name]: value,
+    });
+  };
+
+  const handleDistrictChange = (e) => {
+    const district = e.target.value;
+    setSelectedDistrict(district);
+    setUser({
+      ...user,
+      district: district,
+      constituency: '' // Reset constituency when district changes
+    });
+  };
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setSelectedImage(file);
+      setImagePreview(URL.createObjectURL(file)); // Create a local preview of the image
+    }
+  };
+
+  const handleSave = async () => {
+    try {
+      // Create FormData object to include user data and image
+      const formData = new FormData();
+      formData.append('name', user.name);
+      formData.append('password', user.password);
+      formData.append('nic', user.nic);
+      formData.append('address', user.address);
+      formData.append('district', user.district);
+      formData.append('constituency', user.constituency);
+      
+      // Check if an image is selected and append it
+      if (selectedImage) {
+        formData.append('profile_picture', selectedImage); // Append image if selected
+      }
+  
+      const response = await fetch(`http://localhost:8000/api/update/${user.id}`, {
+        method: 'PUT',  // Change to POST or PUT based on your needs
+        body: formData,
+      });
+  
+      if (response.ok) {
+        const updatedUser = await response.json();
+        localStorage.setItem('user', JSON.stringify(updatedUser));
+        setUser(updatedUser);
+        setIsEditing(false);
+        alert('Profile updated successfully!');
+      } else {
+        console.error("Failed to update profile");
+        alert('Failed to update profile. Please try again.');
+      }
+    } catch (error) {
+      console.error("An error occurred while updating the profile:", error);
+      alert('An error occurred. Please try again.');
+    }
+  };
+
+  const handleEdit = () => {
+    setIsEditing(true);
+  };
+
+  return (
+    <div className="profile-container p-4">
+      <h1 className="text-3xl font-bold mb-4">User Profile</h1>
+      <div className="profile-details bg-gray-100 p-4 rounded-md">
+        {(imagePreview || user.profile_picture) && (
+          <img
+            src={imagePreview || user.profile_picture}
+            alt={`${user.name}'s Profile`}
+            className="profile-picture mb-4 w-32 h-32 rounded-full object-cover"
+          />
+        )}
+
+        {isEditing ? (
+          <div>
+            <div className="mb-4">
+              <label className="block mb-2">
+                Name:
+                <input
+                  type="text"
+                  name="name"
+                  value={user.name || ''}
+                  onChange={handleInputChange}
+                  className="border p-2 rounded w-full"
+                />
+              </label>
+            </div>
+            <div className="mb-4">
+              <label className="block mb-2">
+                Upload Profile Picture:
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageChange}
+                  className="border p-2 rounded w-full"
+                />
+              </label>
+            </div>
+            <div className="mb-4">
+              <label className="block mb-2">
+                Email:
+                <input
+                  type="email"
+                  name="email"
+                  value={user.email || ''}
+                  onChange={handleInputChange}
+                  className="border p-2 rounded w-full"
+                  readOnly
+                  disabled
+                />
+              </label>
+            </div>
+            <div className="mb-4">
+              <label className="block mb-2">
+                Password:
+                <input
+                  type="password"
+                  name="password"
+                  value={user.password || ''}
+                  onChange={handleInputChange}
+                  className="border p-2 rounded w-full"
+                />
+              </label>
+            </div>
+            <div className="mb-4">
+              <label className="block mb-2">
+                Voter ID:
+                <input
+                  type="text"
+                  name="voter_id"
+                  value={user.voter_id || ''}
+                  onChange={handleInputChange}
+                  className="border p-2 rounded w-full"
+                  readOnly
+                  disabled
+                />
+              </label>
+            </div>
+            <div className="mb-4">
+              <label className="block mb-2">
+                Role:
+                <input
+                  type="text"
+                  name="role"
+                  value={user.role || ''}
+                  onChange={handleInputChange}
+                  className="border p-2 rounded w-full"
+                  readOnly
+                  disabled
+                />
+              </label>
+            </div>
+            <div className="mb-4">
+              <label className="block mb-2">
+                NIC:
+                <input
+                  type="text"
+                  name="nic"
+                  value={user.nic || ''}
+                  onChange={handleInputChange}
+                  className="border p-2 rounded w-full"
+                />
+              </label>
+            </div>
+            <div className="mb-4">
+              <label className="block mb-2">
+                Address:
+                <input
+                  type="text"
+                  name="address"
+                  value={user.address || ''}
+                  onChange={handleInputChange}
+                  className="border p-2 rounded w-full"
+                />
+              </label>
+            </div>
+            <div className="mb-4">
+              <label className="block mb-2">
+                District:
+                <select
+                  name="district"
+                  value={user.district || ''}
+                  onChange={handleDistrictChange}
+                  className="border p-2 rounded w-full"
+                >
+                  <option value="" disabled>Select your district</option>
+                  {districts.map((district) => (
+                    <option key={district.id} value={district.name}>
+                      {district.name}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            </div>
+            <div className="mb-4">
+              <label className="block mb-2">
+                Constituency:
+                <select
+                  name="constituency"
+                  value={user.constituency || ''}
+                  onChange={handleInputChange}
+                  className="border p-2 rounded w-full"
+                >
+                  <option value="" disabled>Select your constituency</option>
+                  {constituencies.map((constituency) => (
+                    <option key={constituency.id} value={constituency.name}>
+                      {constituency.name}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            </div>
+            <div className="flex justify-between">
+              <button onClick={handleSave} className="bg-blue-500 text-white px-4 py-2 rounded">
+                Save
+              </button>
+              <button onClick={() => setIsEditing(false)} className="bg-gray-300 text-black px-4 py-2 rounded">
+                Cancel
+              </button>
+            </div>
+          </div>
+        ) : (
+          <div>
+            <p><strong>Name:</strong> {user.name || 'Name not available'}</p>
+            <p><strong>Email:</strong> {user.email || 'Email not available'}</p>
+            <p><strong>Password:</strong> {user.password || 'Password not available'}</p>
+            <p><strong>Voter ID:</strong> {user.voter_id || 'Voter ID not available'}</p>
+            <p><strong>Role:</strong> {user.role || 'Role not available'}</p>
+            <p><strong>NIC:</strong> {user.nic || 'NIC not available'}</p>
+            <p><strong>Address:</strong> {user.address || 'Address not available'}</p>
+            <p><strong>District:</strong> {user.district || 'District not available'}</p>
+            <p><strong>Constituency:</strong> {user.constituency || 'Constituency not available'}</p>
+            <button
+              onClick={handleEdit}
+              className="bg-blue-500 text-white p-2 rounded mt-4"
+            >
+              Edit Profile
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
 };
 
 export default Profile;
