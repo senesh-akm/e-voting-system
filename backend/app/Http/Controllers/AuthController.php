@@ -98,10 +98,10 @@ class AuthController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users,email,' . $id,
-            'password' => 'required|string|min:8',
+            'password' => 'nullable|string|min:8', // Password can be nullable, as it might not always change
             'voter_id' => 'required|string|unique:users,voter_id,' . $id,
             'role' => 'required|string|in:voter,admin',
-            'profile_picture' => 'nullable|string',
+            'profile_picture' => 'nullable|image|mimes:jpeg,png,jpg|max:2048', // Image validation
             'nic' => 'nullable|string',
             'address' => 'nullable|string',
             'district' => 'nullable|string',
@@ -111,21 +111,32 @@ class AuthController extends Controller
         // Find the user or fail
         $user = User::findOrFail($id);
 
-        // Update user
-        $user->update([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'voter_id' => $request->voter_id,
-            'role' => $request->role,
-            'profile_picture' => $request->profile_picture ?? '',
-            'nic' => $request->nic ?? '',
-            'address' => $request->address ?? '',
-            'district' => $request->district ?? '',
-            'constituency' => $request->constituency ?? '',
-        ]);
+        // Update user data
+        $user->name = $request->name;
+        $user->email = $request->email;
 
-        // Return a success message
+        // Only hash the password if it's present
+        if ($request->filled('password')) {
+            $user->password = Hash::make($request->password);
+        }
+
+        $user->voter_id = $request->voter_id;
+        $user->role = $request->role;
+        $user->nic = $request->nic;
+        $user->address = $request->address;
+        $user->district = $request->district;
+        $user->constituency = $request->constituency;
+
+        // Handle the profile picture upload
+        if ($request->hasFile('profile_picture')) {
+            $imagePath = $request->file('profile_picture')->store('profile_pictures', 'public');
+            $user->profile_picture = $imagePath;
+        }
+
+        // Save the user data
+        $user->save();
+
+        // Return the updated user data
         return response()->json([
             'message' => 'User updated successfully',
             'user' => $user,
