@@ -1,5 +1,5 @@
 import React from 'react';
-// import Party from './Party';
+import { useNavigate } from 'react-router-dom';
 
 const Dashboard = ({ userRole }) => {
   return (
@@ -21,23 +21,31 @@ const VoterDashboard = () => {
     <div className="mt-6">
       <h2 className="text-xl font-bold">Voter Dashboard</h2>
       <p className="mt-4">Here you can see the election details and vote for candidates.</p>
-      {/* Add election details and candidate information here */}
-      <button className="mt-4 p-2 bg-blue-500 text-white rounded">Vote Now</button>
+      <button className="p-2 mt-4 text-white bg-blue-500 rounded">Vote Now</button>
     </div>
   );
 };
 
 const AdminDashboard = () => {
+  const navigate = useNavigate();
+
+  const handleRegisterVoter = () => {
+    navigate('/register'); // Navigate to the register page
+  };
+
   return (
     <div className="mt-6">
       <h2 className="text-xl font-bold">Admin Dashboard</h2>
       <p className="mt-4">Manage the election, register voters, manage candidates, and monitor results.</p>
-      {/* Add admin functionalities here */}
       <div className="mt-4">
-        <button className="p-2 bg-green-500 text-white rounded mr-2">Register Voter</button>
-        <button className="p-2 bg-purple-500 text-white rounded mr-2">Manage Candidates</button>
-        <button className="p-2 bg-red-500 text-white rounded">Monitor Results</button>
-        {/* <Party /> */}
+        <button 
+          className="p-2 mr-2 text-white bg-green-500 rounded"
+          onClick={handleRegisterVoter}
+        >
+          Register Voter
+        </button>
+        <button className="p-2 mr-2 text-white bg-purple-500 rounded">Manage Candidates</button>
+        <button className="p-2 text-white bg-red-500 rounded">Monitor Results</button>
       </div>
     </div>
   );

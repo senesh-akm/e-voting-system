@@ -40,6 +40,8 @@ Route::post('/constituencies', [ConstituencyController::class, 'store']);
 Route::get('/elections', [ElectionController::class, 'index']);
 Route::post('/elections', [ElectionController::class, 'store']);
 Route::put('/elections/{id}', [ElectionController::class, 'update']);
+Route::post('/elections/{id}/set-active', [ElectionController::class, 'setActiveElection']);
+Route::get('/elections/active', [ElectionController::class, 'getActiveElection']);
 
 // Candidate Module
 Route::get('/elections/{election_id}/candidates', [CandidateController::class, 'index']);

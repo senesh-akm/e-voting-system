@@ -3,6 +3,7 @@ import axios from 'axios';
 
 const Election = () => {
   const [elections, setElections] = useState([]);
+  const [activeElectionId, setActiveElectionId] = useState(null); // Track active election
   const [formData, setFormData] = useState({
     id: '',
     title: '',
@@ -16,6 +17,7 @@ const Election = () => {
 
   useEffect(() => {
     fetchElections();
+    fetchActiveElection(); // Fetch the currently active election
   }, []);
 
   const fetchElections = async () => {
@@ -24,6 +26,17 @@ const Election = () => {
       setElections(response.data);
     } catch (error) {
       console.error('Error fetching elections:', error);
+    }
+  };
+
+  const fetchActiveElection = async () => {
+    try {
+      const response = await axios.get('http://localhost:8000/api/elections/active');
+      if (response.data) {
+        setActiveElectionId(response.data.id);
+      }
+    } catch (error) {
+      console.error('Error fetching active election:', error);
     }
   };
 
@@ -63,6 +76,15 @@ const Election = () => {
     setIsEditing(true);
   };
 
+  const handleSetActive = async (electionId) => {
+    try {
+      await axios.post(`http://localhost:8000/api/elections/${electionId}/set-active`);
+      setActiveElectionId(electionId); // Set the active election ID locally
+    } catch (error) {
+      console.error('Error setting active election:', error);
+    }
+  };
+
   const resetForm = () => {
     setFormData({
       id: '',
@@ -77,16 +99,16 @@ const Election = () => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto py-8 px-4">
-      <h1 className="text-2xl font-bold mb-4">{isEditing ? 'Edit Election' : 'Add Election'}</h1>
-      <form onSubmit={handleSubmit} className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+    <div className="max-w-4xl px-4 py-8 mx-auto">
+      <h1 className="mb-4 text-2xl font-bold">{isEditing ? 'Edit Election' : 'Add Election'}</h1>
+      <form onSubmit={handleSubmit} className="px-8 pt-6 pb-8 mb-4 bg-white rounded shadow-md">
         <input
           type="text"
           name="title"
           value={formData.title}
           onChange={handleInputChange}
           placeholder="Title"
-          className="p-2 border mb-2 w-full"
+          className="w-full p-2 mb-2 border"
           required
         />
         <textarea
@@ -94,14 +116,14 @@ const Election = () => {
           value={formData.description}
           onChange={handleInputChange}
           placeholder="Description"
-          className="p-2 border mb-2 w-full"
+          className="w-full p-2 mb-2 border"
         />
         <input
           type="date"
           name="start_date"
           value={formData.start_date}
           onChange={handleInputChange}
-          className="p-2 border mb-2 w-full"
+          className="w-full p-2 mb-2 border"
           required
         />
         <input
@@ -109,7 +131,7 @@ const Election = () => {
           name="start_time"
           value={formData.start_time}
           onChange={handleInputChange}
-          className="p-2 border mb-2 w-full"
+          className="w-full p-2 mb-2 border"
           required
         />
         <input
@@ -117,7 +139,7 @@ const Election = () => {
           name="end_date"
           value={formData.end_date}
           onChange={handleInputChange}
-          className="p-2 border mb-2 w-full"
+          className="w-full p-2 mb-2 border"
           required
         />
         <input
@@ -125,28 +147,35 @@ const Election = () => {
           name="end_time"
           value={formData.end_time}
           onChange={handleInputChange}
-          className="p-2 border mb-2 w-full"
+          className="w-full p-2 mb-2 border"
           required
         />
-        <button type="submit" className="bg-blue-500 text-white p-2 rounded mt-2">
+        <button type="submit" className="p-2 mt-2 text-white bg-blue-500 rounded">
           {isEditing ? 'Update Election' : 'Add Election'}
         </button>
         {isEditing && (
-          <button type="button" onClick={resetForm} className="bg-gray-500 text-white p-2 rounded mt-2 ml-2">
+          <button type="button" onClick={resetForm} className="p-2 mt-2 ml-2 text-white bg-gray-500 rounded">
             Cancel
           </button>
         )}
       </form>
 
-      <h2 className="text-xl font-bold mb-4">Election List</h2>
+      <h2 className="mb-4 text-xl font-bold">Election List</h2>
       <ul className="space-y-2">
         {elections.map((election) => (
-          <li key={election.id} className="relative border p-4 rounded bg-white shadow">
+          <li key={election.id} className={`relative border p-4 rounded bg-white shadow ${activeElectionId === election.id ? 'bg-green-200' : ''}`}>
             <button
               onClick={() => handleEdit(election)}
-              className="absolute top-2 right-2 bg-yellow-500 text-white px-4 py-2 rounded"
+              className="absolute px-4 py-2 text-white bg-yellow-500 rounded top-2 right-2"
             >
               Edit
+            </button>
+            <button
+              onClick={() => handleSetActive(election.id)}
+              className="absolute px-4 py-2 text-white bg-blue-500 rounded top-2 left-2"
+              disabled={activeElectionId === election.id}
+            >
+              {activeElectionId === election.id ? 'Active' : 'Set Active'}
             </button>
             <h3 className="text-lg font-semibold">{election.title}</h3>
             <p>{election.description}</p>

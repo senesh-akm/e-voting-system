@@ -65,4 +65,27 @@ class ElectionController extends Controller
             'elections' => $election
         ], 200);
     }
+
+    // Method to set an election as active
+    public function setActiveElection($id)
+    {
+        // Deactivate all elections
+        Election::query()->update(['is_active' => false]);
+
+        // Set the selected election as active
+        $election = Election::findOrFail($id);
+        $election->update(['is_active' => true]);
+
+        return response()->json([
+            'message' => 'Election set as active',
+            'election' => $election
+        ]);
+    }
+
+    // Fetch the active election
+    public function getActiveElection()
+    {
+        $activeElection = Election::where('is_active', true)->first();
+        return response()->json($activeElection);
+    }
 }

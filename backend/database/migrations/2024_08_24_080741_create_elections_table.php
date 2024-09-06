@@ -19,6 +19,7 @@ return new class extends Migration
             $table->time('start_time');
             $table->date('end_date');
             $table->time('end_time');
+            $table->boolean('is_active')->default(false);
             $table->timestamps();
         });
     }
