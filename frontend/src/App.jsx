@@ -15,6 +15,7 @@ import Election from './components/Election';
 import Candidate from './components/Candidate';
 import Profile from './components/auth/Profile';
 import Vote from './components/Vote';
+import AuditLogs from './components/AuditLog';
 
 const AppLayout = ({ children }) => {
   const location = useLocation();
@@ -63,6 +64,7 @@ const App = () => {
           <Route path="/candidates" element={<Candidate />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/votes" element={<Vote />} />
+          <Route path="/audit-logs" element={<AuditLogs />} />
         </Routes>
 
         {/* Message Display */}
