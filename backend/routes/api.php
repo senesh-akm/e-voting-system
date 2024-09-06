@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AuditLogController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CandidateController;
 use App\Http\Controllers\ConstituencyController;
@@ -49,3 +50,7 @@ Route::delete('/candidates/{id}', [CandidateController::class, 'destroy']);
 
 // Vote Module
 Route::post('/votes', [VoteController::class, 'store']);
+
+// Audit Logs Module
+Route::get('/audit-logs', [AuditLogController::class, 'index']);
+// Route::post('/audit-logs', [AuditLogController::class, 'store']);
