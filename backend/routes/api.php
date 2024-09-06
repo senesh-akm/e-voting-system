@@ -50,6 +50,7 @@ Route::delete('/candidates/{id}', [CandidateController::class, 'destroy']);
 
 // Vote Module
 Route::post('/votes', [VoteController::class, 'store']);
+Route::get('/votes/{userId}', [VoteController::class, 'checkVote']);
 
 // Audit Logs Module
 Route::get('/audit-logs', [AuditLogController::class, 'index']);

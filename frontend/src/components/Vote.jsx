@@ -11,14 +11,10 @@ const Vote = () => {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        // Assume the user data is stored in local storage after login
         const userData = JSON.parse(localStorage.getItem('user'));
-        console.log('Fetched user data:', userData); // Debugging statement
-
         if (userData && userData.name) {
           setUser(userData);
-        } else {
-          console.warn("User data is not available or does not contain a name.");
+          checkIfVoted(userData.id); // Check if the user has already voted
         }
       } catch (error) {
         console.error("Failed to fetch user data:", error);
@@ -28,18 +24,26 @@ const Vote = () => {
     fetchUserData();
   }, []);
 
+  // Check if the user has already voted
+  const checkIfVoted = async (userId) => {
+    try {
+      const response = await axios.get(`http://localhost:8000/api/votes/${userId}`);
+      if (response.data) {
+        setVotedCandidateId(response.data.candidate_id); // Set the voted candidate ID
+      }
+    } catch (error) {
+      console.error("Error checking vote status:", error);
+    }
+  };
+
   // Fetch candidates and party data
   useEffect(() => {
     axios.get('http://localhost:8000/api/candidates')
-      .then(response => {
-        setCandidates(response.data);
-      })
+      .then(response => setCandidates(response.data))
       .catch(error => console.error('Error fetching candidates:', error));
 
     axios.get('http://localhost:8000/api/parties')
-      .then(response => {
-        setParties(response.data);
-      })
+      .then(response => setParties(response.data))
       .catch(error => console.error('Error fetching parties:', error));
   }, []);
 
@@ -48,8 +52,17 @@ const Vote = () => {
   };
 
   const handleVote = (candidateId) => {
-    setVotedCandidateId(candidateId); // Set the voted candidate ID
-    console.log('Voted for candidate:', candidateId);
+    axios.post('http://localhost:8000/api/votes', {
+      user_id: user.id,
+      candidate_id: candidateId,
+      election_id: 1, // Assuming election ID is 1 for this example
+      district: user.district,
+      constituency: user.constituency
+    })
+    .then(response => {
+      setVotedCandidateId(candidateId); // Set the voted candidate ID after successful vote
+    })
+    .catch(error => console.error("Error voting:", error));
   };
 
   return (
