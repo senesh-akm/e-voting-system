@@ -8,18 +8,28 @@ const Constituency = () => {
   const [constituencies, setConstituencies] = useState([]);
   const [districts, setDistricts] = useState([]);
   const [message, setMessage] = useState('');
+  const [user, setUser] = useState({}); // User data for audit log
 
   // Fetch constituencies and districts when the component is mounted
   useEffect(() => {
     fetchConstituencies();
-    fetchDistricts(); // Fetch districts as well
+    fetchDistricts();
+    fetchUser(); // Fetch the user data for logging
   }, []);
+
+  // Fetch user data from localStorage for audit log purposes
+  const fetchUser = () => {
+    const userData = JSON.parse(localStorage.getItem('user'));
+    if (userData) {
+      setUser(userData);
+    }
+  };
 
   // Function to fetch constituencies
   const fetchConstituencies = async () => {
     try {
-      const response = await axios.get('http://localhost:8000/api/constituencies');
-      setConstituencies(response.data);
+      const { data } = await axios.get('http://localhost:8000/api/constituencies');
+      setConstituencies(data);
     } catch (error) {
       console.error('Error fetching constituencies:', error);
     }
@@ -28,10 +38,23 @@ const Constituency = () => {
   // Function to fetch districts
   const fetchDistricts = async () => {
     try {
-      const response = await axios.get('http://localhost:8000/api/districts'); // Assuming this endpoint exists
-      setDistricts(response.data);
+      const { data } = await axios.get('http://localhost:8000/api/districts');
+      setDistricts(data);
     } catch (error) {
       console.error('Error fetching districts:', error);
+    }
+  };
+
+  // Function to log the "Add Constituency" action in the audit log
+  const logAuditAction = async (action, description) => {
+    try {
+      await axios.post('http://localhost:8000/api/audit-logs', {
+        user_id: user.id,
+        action,
+        description,
+      });
+    } catch (error) {
+      console.error('Error logging audit action:', error);
     }
   };
 
@@ -39,7 +62,7 @@ const Constituency = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://localhost:8000/api/constituencies', {
+      await axios.post('http://localhost:8000/api/constituencies', {
         name,
         district_id: districtId,
       });
@@ -47,6 +70,9 @@ const Constituency = () => {
       setName('');
       setDistrictId('');
       fetchConstituencies(); // Refresh the list
+
+      // Log the constituency addition to the audit log
+      await logAuditAction('Add Constituency', `Added constituency: ${name} to district ID: ${districtId}`);
     } catch (error) {
       setMessage('Error adding constituency. Make sure the name is unique and district exists.');
     }
@@ -102,7 +128,7 @@ const Constituency = () => {
               {constituencies.length > 0 ? (
                 constituencies.map((constituency) => (
                   <li key={constituency.id} className="border-b p-2">
-                    {constituency.name} | {constituency.district.name} {/* Display district name */}
+                    {constituency.name} | {constituency.district.name}
                   </li>
                 ))
               ) : (
