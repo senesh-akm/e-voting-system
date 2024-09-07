@@ -34,22 +34,30 @@ function AuditLogs() {
   return (
     <div className="container p-4 mx-auto">
       {/* Display user information */}
-      <h2><span className="font-bold">Your Name:</span> {user.name || 'Name not available'}</h2>
+      <h2>
+        <span className="font-bold">Your Name:</span> {user.name || 'Name not available'}
+      </h2>
 
       {/* Display Audit Logs */}
-      <h1 className="text-xl font-bold mt-4">Audit Logs</h1>
-      <ul>
+      <h1 className="mt-4 text-xl font-bold">Audit Logs</h1>
+      <div className="mt-4 space-y-4">
         {logs.length > 0 ? (
-          logs.map(log => (
-            <li key={log.id} className="p-2 my-2 bg-gray-100 rounded">
-              <strong>Action:</strong> {log.action} <br />
-              <strong>Description:</strong> {log.description}
-            </li>
+          logs.map((log) => (
+            <div
+              key={log.id}
+              className="p-4 bg-white border border-gray-200 rounded-lg shadow-md"
+            >
+              <h3 className="mb-2 text-lg font-semibold">Action: {log.action}</h3>
+              <p className="mb-2 text-sm text-gray-600">
+                <strong>Description:</strong> {log.description || 'No description provided'}
+              </p>
+              <p className="text-xs text-gray-400">Logged at: {new Date(log.created_at).toLocaleString()}</p>
+            </div>
           ))
         ) : (
           <p>No audit logs available for this user.</p>
         )}
-      </ul>
+      </div>
     </div>
   );
 }
