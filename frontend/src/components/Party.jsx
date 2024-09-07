@@ -2,45 +2,26 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
 const Party = () => {
-  // State to hold party inputs and the list of parties
   const [partyName, setPartyName] = useState('');
   const [partyLogo, setPartyLogo] = useState(null);
-  const [partyLogoPreview, setPartyLogoPreview] = useState(null); // State for image preview
+  const [partyLogoPreview, setPartyLogoPreview] = useState(null); // Image preview
   const [parties, setParties] = useState([]);
   const [message, setMessage] = useState('');
   const [editPartyId, setEditPartyId] = useState(null);
+  const [user, setUser] = useState({}); // Store user information
 
-  // Function to handle form submission for adding or updating a party
-  const handleAddOrUpdateParty = async (e) => {
-    e.preventDefault();
-    const formData = new FormData();
-    formData.append('name', partyName);
-    if (partyLogo) {
-      formData.append('party_logo', partyLogo);
-    }
-
-    try {
-      if (editPartyId) {
-        // Update existing party
-        const response = await axios.put(`http://localhost:8000/api/parties/${editPartyId}`, formData);
-        setMessage(response.data.message);
-      } else {
-        // Add a new party
-        const response = await axios.post('http://localhost:8000/api/parties', formData);
-        setMessage(response.data.message);
+  // Fetch user data from local storage
+  useEffect(() => {
+    const fetchUserData = () => {
+      const userData = JSON.parse(localStorage.getItem('user'));
+      if (userData) {
+        setUser(userData);
       }
+    };
+    fetchUserData();
+  }, []);
 
-      setPartyName(''); // Clear input fields after adding/updating
-      setPartyLogo(null);
-      setPartyLogoPreview(null); // Clear image preview after adding/updating
-      setEditPartyId(null); // Reset edit mode
-      fetchParties(); // Refresh the list of parties
-    } catch (error) {
-      setMessage('Error adding/updating party. Make sure the party name is unique.');
-    }
-  };
-
-  // Function to fetch the list of parties from the backend
+  // Fetch list of parties
   const fetchParties = async () => {
     try {
       const response = await axios.get('http://localhost:8000/api/parties');
@@ -50,7 +31,57 @@ const Party = () => {
     }
   };
 
-  // Function to handle editing a party
+  // Function to log actions to audit logs
+  const logAuditAction = async (action, description) => {
+    try {
+      await axios.post('http://localhost:8000/api/audit-logs', {
+        user_id: user.id,
+        action,
+        description,
+      });
+    } catch (error) {
+      console.error('Error logging audit action:', error);
+    }
+  };
+
+  // Handle adding or updating party
+  const handleAddOrUpdateParty = async (e) => {
+    e.preventDefault();
+    const formData = new FormData();
+    formData.append('name', partyName);
+    if (partyLogo) {
+      formData.append('party_logo', partyLogo);
+    }
+
+    try {
+      let response;
+      if (editPartyId) {
+        // Update existing party
+        response = await axios.put(`http://localhost:8000/api/parties/${editPartyId}`, formData);
+        setMessage(response.data.message);
+
+        // Log audit action for update
+        logAuditAction('Party Updated', `Updated party: ${partyName}`);
+      } else {
+        // Add a new party
+        response = await axios.post('http://localhost:8000/api/parties', formData);
+        setMessage(response.data.message);
+
+        // Log audit action for creation
+        logAuditAction('Party Created', `Created new party: ${partyName}`);
+      }
+
+      setPartyName('');
+      setPartyLogo(null);
+      setPartyLogoPreview(null);
+      setEditPartyId(null);
+      fetchParties();
+    } catch (error) {
+      setMessage('Error adding/updating party. Make sure the party name is unique.');
+    }
+  };
+
+  // Handle editing party
   const handleEditParty = (partyId) => {
     const party = parties.find((party) => party.id === partyId);
     if (party) {
@@ -64,13 +95,12 @@ const Party = () => {
     const file = e.target.files[0];
     setPartyLogo(file);
     if (file) {
-      setPartyLogoPreview(URL.createObjectURL(file)); // Set preview for the selected image
+      setPartyLogoPreview(URL.createObjectURL(file)); // Set preview
     } else {
-      setPartyLogoPreview(null); // Clear preview if no file is selected
+      setPartyLogoPreview(null); // Clear preview
     }
   };
 
-  // Use useEffect to fetch the parties once the component is mounted
   useEffect(() => {
     fetchParties();
   }, []);
