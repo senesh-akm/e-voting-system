@@ -5,7 +5,7 @@ const Vote = () => {
   const [user, setUser] = useState({});
   const [candidates, setCandidates] = useState([]);
   const [parties, setParties] = useState([]);
-  const [votedCandidateId, setVotedCandidateId] = useState(null); // State to track voted candidate
+  const [votedCandidateId, setVotedCandidateId] = useState(null);
 
   // Fetch user data
   useEffect(() => {
@@ -51,18 +51,34 @@ const Vote = () => {
     return parties.find(party => party.name === partyName) || {};
   };
 
-  const handleVote = (candidateId) => {
-    axios.post('http://localhost:8000/api/votes', {
-      user_id: user.id,
-      candidate_id: candidateId,
-      election_id: 1, // Assuming election ID is 1 for this example
-      district: user.district,
-      constituency: user.constituency
-    })
-    .then(response => {
+  const logAuditAction = async (action, description) => {
+    try {
+      await axios.post('http://localhost:8000/api/audit-logs', {
+        user_id: user.id,
+        action,
+        description,
+      });
+    } catch (error) {
+      console.error('Error logging audit action:', error);
+    }
+  };
+
+  const handleVote = async (candidateId) => {
+    try {
+      await axios.post('http://localhost:8000/api/votes', {
+        user_id: user.id,
+        candidate_id: candidateId,
+        election_id: 1, // Assuming election ID is 1 for this example
+        district: user.district,
+        constituency: user.constituency
+      });
       setVotedCandidateId(candidateId); // Set the voted candidate ID after successful vote
-    })
-    .catch(error => console.error("Error voting:", error));
+      
+      // Log the voting action in the audit log
+      logAuditAction('Vote Cast', `User voted for candidate ID: ${candidateId}`);
+    } catch (error) {
+      console.error("Error voting:", error);
+    }
   };
 
   return (
