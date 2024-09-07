@@ -14,6 +14,15 @@ const Candidate = () => {
     candidate_picture: null, // Added field for image
   });
   const [isEditing, setIsEditing] = useState(false);
+  const [user, setUser] = useState(null); // Store logged-in user info for audit log
+
+  // Fetch logged-in user from localStorage
+  useEffect(() => {
+    const storedUser = JSON.parse(localStorage.getItem('user'));
+    if (storedUser) {
+      setUser(storedUser);
+    }
+  }, []);
 
   // Fetch all candidates
   const fetchCandidates = useCallback(async () => {
@@ -49,6 +58,18 @@ const Candidate = () => {
     fetchParties();
   }, [fetchCandidates, fetchElections, fetchParties]);
 
+  const logAuditAction = async (action, description) => {
+    try {
+      await axios.post('http://localhost:8000/api/audit-logs', {
+        user_id: user.id, // Use the logged-in user ID
+        action,
+        description,
+      });
+    } catch (error) {
+      console.error('Error logging audit action:', error);
+    }
+  };
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -74,12 +95,14 @@ const Candidate = () => {
     if (formData.candidate_picture) {
       data.append('candidate_picture', formData.candidate_picture); // Append image if it exists
     }
-  
+
     try {
       if (isEditing) {
-        await axios.put(`http://localhost:8000/api/candidates/${formData.id}`, data); // Use PUT for editing
+        await axios.put(`http://localhost:8000/api/candidates/${formData.id}`, data);
+        await logAuditAction('Update Candidate', `Updated candidate: ${formData.name}`);
       } else {
-        await axios.post('http://localhost:8000/api/candidates', data); // Use POST for creating
+        await axios.post('http://localhost:8000/api/candidates', data);
+        await logAuditAction('Add Candidate', `Added candidate: ${formData.name}`);
       }
       fetchCandidates();
       resetForm();
@@ -103,6 +126,7 @@ const Candidate = () => {
   const handleDelete = async (id) => {
     try {
       await axios.delete(`http://localhost:8000/api/candidates/${id}`);
+      await logAuditAction('Delete Candidate', `Deleted candidate with ID: ${id}`);
       fetchCandidates();
     } catch (error) {
       console.error('Error deleting candidate:', error);
@@ -186,7 +210,7 @@ const Candidate = () => {
       </form>
 
       <h2 className="text-xl font-bold mb-4">Candidate List</h2>
-      <p>Total Registered Candidates: {candidates.length}</p> {/* Display the candidate count */}
+      <p>Total Registered Candidates: {candidates.length}</p>
       <ul className="space-y-2">
         {candidates.map((candidate) => (
           <li key={candidate.id} className="border p-4 rounded bg-white shadow relative flex items-center">
@@ -195,17 +219,15 @@ const Candidate = () => {
               <img
                 src={`http://localhost:8000/storage/${candidate.candidate_picture}`}
                 alt="Candidate"
-                className="w-24 h-24 object-cover mr-4" // Image class for styling
+                className="w-24 h-24 object-cover mr-4"
               />
             )}
-            
             {/* Candidate details */}
             <div className="flex-1">
               <h3 className="text-lg font-semibold">{candidate.name}</h3>
               <h4 className="text-m font-semibold">Party: {candidate.party}</h4>
               <p className="line-clamp-3">{candidate.biography}</p>
             </div>
-
             {/* Edit and Delete buttons */}
             <div className="flex space-x-2 absolute top-2 right-2">
               <button
