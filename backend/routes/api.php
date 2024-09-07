@@ -57,4 +57,4 @@ Route::get('/votes/{userId}', [VoteController::class, 'checkVote']);
 
 // Audit Logs Module
 Route::get('/audit-logs', [AuditLogController::class, 'index']);
-// Route::post('/audit-logs', [AuditLogController::class, 'store']);
+Route::post('/audit-logs', [AuditLogController::class, 'store']);

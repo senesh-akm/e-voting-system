@@ -10,6 +10,18 @@ const Login = ({ setUserRole }) => {
   const [isError, setIsError] = useState(false);
   const navigate = useNavigate();
 
+  const logAudit = async (userId, action, description) => {
+    try {
+      await axios.post("http://localhost:8000/api/audit-logs", {
+        action,
+        description,
+        user_id: userId,
+      });
+    } catch (error) {
+      console.error("Error logging audit:", error);
+    }
+  };
+
   const handleLogin = async (email, password) => {
     try {
       const response = await axios.post("http://localhost:8000/api/login", {
@@ -21,11 +33,15 @@ const Login = ({ setUserRole }) => {
       if (response.status === 200) {
         const { user } = response.data;
         // Save the user data to local storage
-        localStorage.setItem('user', JSON.stringify(user));
+        localStorage.setItem("user", JSON.stringify(user));
         // Update the userRole state in App component
-        setUserRole(user.role);  // Update userRole state after login
+        setUserRole(user.role);
         setMessage(response.data.message);
-        setIsError(false); 
+        setIsError(false);
+
+        // Log the login action to the audit log
+        await logAudit(user.id, "User Login", `${user.name} logged in`);
+
         navigate("/dashboard");
       } else {
         setMessage("Login failed");
@@ -45,7 +61,7 @@ const Login = ({ setUserRole }) => {
 
   return (
     <div className="max-w-md mx-auto mt-10">
-      <h1 className="mb-5 text-2xl text-center font-bold">Login</h1>
+      <h1 className="mb-5 text-2xl font-bold text-center">Login</h1>
       {message && (
         <div
           className={`p-4 mb-4 text-sm text-center rounded ${
