@@ -35,6 +35,7 @@ Route::post('/districts', [DistrictController::class, 'store']);
 // Constituency Module
 Route::get('/constituencies', [ConstituencyController::class, 'index']);
 Route::post('/constituencies', [ConstituencyController::class, 'store']);
+Route::get('/getConstituencies', [ConstituencyController::class, 'getConstituency']);
 
 // Election Module
 Route::get('/elections', [ElectionController::class, 'index']);
