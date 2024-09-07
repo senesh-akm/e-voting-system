@@ -6,6 +6,15 @@ const District = () => {
   const [districtName, setDistrictName] = useState('');
   const [districts, setDistricts] = useState([]);
   const [message, setMessage] = useState('');
+  const [user, setUser] = useState({}); // User data for logging
+
+  // Fetch user data from localStorage to use for audit logs
+  useEffect(() => {
+    const userData = JSON.parse(localStorage.getItem('user'));
+    if (userData) {
+      setUser(userData);
+    }
+  }, []);
 
   // Function to handle form submission for adding a new district
   const handleAddDistrict = async (e) => {
@@ -14,9 +23,13 @@ const District = () => {
       const response = await axios.post('http://localhost:8000/api/districts', {
         name: districtName,
       });
+
       setMessage(response.data.message);
       setDistrictName(''); // Clear the input field after adding
       fetchDistricts(); // Refresh the list of districts
+
+      // Log the district addition to the audit log
+      await logAuditAction('Add District', `Added district: ${districtName}`);
     } catch (error) {
       setMessage('Error adding district. Make sure the district name is unique.');
     }
@@ -29,6 +42,19 @@ const District = () => {
       setDistricts(response.data);
     } catch (error) {
       console.error('Error fetching districts:', error);
+    }
+  };
+
+  // Function to log the action in the audit log
+  const logAuditAction = async (action, description) => {
+    try {
+      await axios.post('http://localhost:8000/api/audit-logs', {
+        user_id: user.id,
+        action: action,
+        description: description,
+      });
+    } catch (error) {
+      console.error('Error logging audit action:', error);
     }
   };
 
