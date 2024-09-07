@@ -14,10 +14,17 @@ const Election = () => {
     end_time: ''
   });
   const [isEditing, setIsEditing] = useState(false);
+  const [user, setUser] = useState({}); // Store user info for audit logging
 
   useEffect(() => {
     fetchElections();
     fetchActiveElection(); // Fetch the currently active election
+
+    // Fetch the user data from local storage (used for audit logs)
+    const storedUser = JSON.parse(localStorage.getItem('user'));
+    if (storedUser) {
+      setUser(storedUser);
+    }
   }, []);
 
   const fetchElections = async () => {
@@ -40,6 +47,19 @@ const Election = () => {
     }
   };
 
+  // Log actions to audit logs
+  const logAuditAction = async (action, description) => {
+    try {
+      await axios.post('http://localhost:8000/api/audit-logs', {
+        user_id: user.id,
+        action,
+        description,
+      });
+    } catch (error) {
+      console.error('Error logging audit action:', error);
+    }
+  };
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -53,8 +73,10 @@ const Election = () => {
     try {
       if (isEditing) {
         await axios.put(`http://localhost:8000/api/elections/${formData.id}`, formData);
+        logAuditAction('Election Updated', `Updated election: ${formData.title}`);
       } else {
         await axios.post('http://localhost:8000/api/elections', formData);
+        logAuditAction('Election Created', `Created new election: ${formData.title}`);
       }
       fetchElections();
       resetForm();
@@ -80,6 +102,7 @@ const Election = () => {
     try {
       await axios.post(`http://localhost:8000/api/elections/${electionId}/set-active`);
       setActiveElectionId(electionId); // Set the active election ID locally
+      logAuditAction('Election Set Active', `Set election as active: ${electionId}`);
     } catch (error) {
       console.error('Error setting active election:', error);
     }
