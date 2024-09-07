@@ -19,16 +19,16 @@ class AuditLogController extends Controller
         return response()->json($query->get());
     }
 
-    // public function store(Request $request)
-    // {
-    //     $request->validate([
-    //         'action' => 'required|string',
-    //         'description' => 'nullable|string',
-    //         'user_id' => 'required|exists:users,id'
-    //     ]);
+    public function store(Request $request)
+    {
+        $request->validate([
+            'action' => 'required|string',
+            'description' => 'nullable|string',
+            'user_id' => 'required|exists:users,id'
+        ]);
 
-    //     $log = AuditLog::create($request->all());
+        $log = AuditLog::create($request->all());
 
-    //     return response()->json($log, 201);
-    // }
+        return response()->json($log, 201);
+    }
 }
