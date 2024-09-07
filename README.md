@@ -37,7 +37,7 @@ The e-Voting System is an online platform that allows registered voters to cast 
 
 ### **Technology Stack:**
 
-- **Frontend:** React (for building a responsive and dynamic user interface)
+- **Frontend:** React & Tailwind CSS (for building a responsive and dynamic user interface)
 - **Backend:** Laravel (for handling server-side logic, authentication, and API creation)
 - **Database:** MariaDB (for storing voter data, candidate information, and election results)
 
