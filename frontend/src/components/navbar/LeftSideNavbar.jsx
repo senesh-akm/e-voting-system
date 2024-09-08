@@ -29,7 +29,7 @@ const LeftSideNavbar = () => {
           to="/audit-logs"
           className="flex items-center px-4 py-2 text-gray-600 transition-colors duration-200 transform rounded-md hover:bg-blue-200 hover:text-blue-500"
         >
-          <span className="mx-4 font-medium">Audit Logs</span>
+          <span className="mx-4 font-medium">Activity Logs</span>
         </Link>
         <Link
           to="/votes"

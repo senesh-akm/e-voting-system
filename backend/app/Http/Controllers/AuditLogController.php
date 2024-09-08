@@ -16,6 +16,9 @@ class AuditLogController extends Controller
             $query->where('user_id', $request->input('user_id'));
         }
 
+        // Order by the most recent logs first
+        $query->orderBy('created_at', 'desc');
+
         return response()->json($query->get());
     }
 
