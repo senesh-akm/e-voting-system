@@ -50,7 +50,7 @@ const Profile = () => {
     const fetchConstituencies = async () => {
       if (selectedDistrict) {
         try {
-          const response = await axios.get(`http://localhost:8000/api/constituencies?district=${selectedDistrict}`);
+          const response = await axios.get(`http://localhost:8000/api/getConstituencies?district=${selectedDistrict}`);
           setConstituencies(response.data); // Assuming response.data is an array of constituencies
         } catch (error) {
           console.error("Failed to fetch constituencies:", error);
