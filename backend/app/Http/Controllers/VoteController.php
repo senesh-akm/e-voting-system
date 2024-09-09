@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Vote;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class VoteController extends Controller
 {
@@ -43,5 +44,18 @@ class VoteController extends Controller
         }
 
         return response()->json(null, 404);
+    }
+
+    // Result monitoring on votes for candidates
+    public function getResults($electionId)
+    {
+        $results = DB::table('votes')
+            ->select('candidate_id', DB::raw('count(*) as total_votes'))
+            ->where('election_id', $electionId)
+            ->groupBy('candidate_id')
+            ->with('candidate') // Assuming you have a relationship to get candidate details
+            ->get();
+
+        return response()->json($results);
     }
 }
