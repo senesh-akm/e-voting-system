@@ -55,6 +55,7 @@ Route::delete('/candidates/{id}', [CandidateController::class, 'destroy']);
 // Vote Module
 Route::post('/votes', [VoteController::class, 'store']);
 Route::get('/votes/{userId}', [VoteController::class, 'checkVote']);
+Route::get('/elections/{id}/results', [VoteController::class, 'getResults']);
 
 // Audit Logs Module
 Route::get('/audit-logs', [AuditLogController::class, 'index']);
