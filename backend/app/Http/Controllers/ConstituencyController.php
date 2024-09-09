@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Constituency;
+use App\Models\District;
 use Illuminate\Http\Request;
 
 class ConstituencyController extends Controller
@@ -32,7 +33,7 @@ class ConstituencyController extends Controller
         ], 201);
     }
 
-    // Fetch constituencies relevant district
+    // Fetch constituencies relevant district id
     public function getConstituency(Request $request)
     {
         $districtId = $request->query('district_id');  // Get district_id from query string
@@ -45,5 +46,23 @@ class ConstituencyController extends Controller
         $constituencies = Constituency::where('district_id', $districtId)->get();
 
         return response()->json($constituencies);
+    }
+
+    // Fetch constituencies relevant district name
+    public function getConstituenciesByDistrictName(Request $request)
+    {
+        $districtName = $request->query('district_name');
+
+        // Assuming you have a District model that relates to Constituencies
+        $district = District::where('name', $districtName)->first();
+
+        if (!$district) {
+            return response()->json([], 404); // No district found
+        }
+
+        // Retrieve constituencies related to the district
+        $constituencies = $district->constituencies;
+
+        return response()->json($constituencies, 200);
     }
 }

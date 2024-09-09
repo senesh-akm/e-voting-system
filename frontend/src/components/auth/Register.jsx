@@ -38,11 +38,12 @@ const Register = () => {
   }, []);
 
   // Fetch constituencies when a district is selected
+  // Fetch constituencies when a district is selected
   useEffect(() => {
     if (formData.district) {
       const fetchConstituencies = async () => {
         try {
-          const response = await axios.get(`http://localhost:8000/api/getConstituencies?district_id=${formData.district}`);
+          const response = await axios.get(`http://localhost:8000/api/getConstituenciesByDistrictName?district_name=${formData.district}`);
           setConstituencies(response.data);
         } catch (error) {
           console.error('Error fetching constituencies:', error);
@@ -50,6 +51,8 @@ const Register = () => {
       };
 
       fetchConstituencies();
+    } else {
+      setConstituencies([]); // Clear constituencies if no district is selected
     }
   }, [formData.district]);
 
@@ -62,13 +65,12 @@ const Register = () => {
   const handleChange = (e) => {
     const { name, value, files } = e.target;
 
-    // When role changes, auto-generate voter_id
     if (name === 'role') {
       const voterId = generateVoterId(value);
       setFormData({
         ...formData,
         [name]: value,
-        voter_id: voterId, // Update voter_id automatically
+        voter_id: voterId,
       });
     } else if (name === 'profile_picture') {
       setFormData({
@@ -87,24 +89,25 @@ const Register = () => {
     e.preventDefault();
     setError('');
     setSuccess('');
-    setLoading(true); // Set loading to true when form is being submitted
+    setLoading(true);
+  
     try {
       const formDataToSend = new FormData();
       Object.keys(formData).forEach((key) => {
-        formDataToSend.append(key, formData[key]);
+        formDataToSend.append(key, formData[key]);  // Send district name
       });
-
+  
       let response;
       if (isUpdateMode) {
         response = await axios.put(`http://localhost:8000/api/update/${userId}`, formDataToSend);
       } else {
         response = await axios.post('http://localhost:8000/api/register', formDataToSend);
       }
-
+  
       setSuccess(response.data.message);
       setIsUpdateMode(false);
       setUserId(null);
-
+  
       if (!isUpdateMode) {
         setFormData({
           name: '',
@@ -122,7 +125,7 @@ const Register = () => {
     } catch (err) {
       setError(err.response?.data?.message || 'An error occurred');
     } finally {
-      setLoading(false); // Reset loading to false after form is submitted
+      setLoading(false);
     }
   };
 
@@ -222,7 +225,7 @@ const Register = () => {
           >
             <option value="">Select District</option>
             {districts.map((district) => (
-              <option key={district.id} value={district.id}>
+              <option key={district.id} value={district.name}>
                 {district.name}
               </option>
             ))}

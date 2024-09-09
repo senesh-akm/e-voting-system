@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 
 class AuthController extends Controller
 {
@@ -27,44 +28,51 @@ class AuthController extends Controller
     // Register new users
     public function register(Request $request)
     {
-        // Validate the request data
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8',
-            'voter_id' => 'required|string|unique:users',
-            'role' => 'required|string|in:voter,admin',
-            'profile_picture' => 'nullable|file|max:2048',
-            'nic' => 'nullable|string',
-            'address' => 'nullable|string',
-            'district' => 'nullable|string',
-            'constituency' => 'nullable|string',
-        ]);
+        try {
+            // Validate the request data
+            $request->validate([
+                'name' => 'required|string|max:255',
+                'email' => 'required|string|email|max:255|unique:users',
+                'password' => 'required|string|min:8',
+                'voter_id' => 'required|string|unique:users',
+                'role' => 'required|string|in:voter,admin',
+                'profile_picture' => 'nullable|file|max:2048',
+                'nic' => 'nullable|string',
+                'address' => 'nullable|string',
+                'district' => 'nullable|string',  // Validate as a string
+                'constituency' => 'nullable|string',
+            ]);
 
-        // Handle the image upload
-        if ($request->hasFile('profile_picture')) {
-            $validated['profile_picture'] = $request->file('profile_picture')->store('profile_pictures', 'public');
+            // Handle the image upload
+            if ($request->hasFile('profile_picture')) {
+                $validated['profile_picture'] = $request->file('profile_picture')->store('profile_pictures', 'public');
+            }
+
+            // Create a new user
+            $user = User::create([
+                'name' => $request->name,
+                'email' => $request->email,
+                'password' => Hash::make($request->password),
+                'voter_id' => $request->voter_id,
+                'role' => $request->role,
+                'profile_picture' => $request->profile_picture ?? '',
+                'nic' => $request->nic,
+                'address' => $request->address,
+                'district' => $request->district,  // Store district name instead of ID
+                'constituency' => $request->constituency,
+            ]);
+
+            return response()->json([
+                'message' => 'User registered successfully',
+                'user' => $user
+            ], 201);
+        } catch (\Exception $e) {
+            Log::error('User Registration Error: ' . $e->getMessage());
+
+            return response()->json([
+                'message' => 'An error occurred while registering the user.',
+            ], 500);
         }
-
-        // Create a new user
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'voter_id' => $request->voter_id,
-            'role' => $request->role,
-            'profile_picture' => $request->profile_picture ?? '',
-            'nic' => $request->nic ?? '',
-            'address' => $request->address ?? '',
-            'district' => $request->district ?? '',
-            'constituency' => $request->constituency ?? '',
-        ]);
-
-        // Return a success message
-        return response()->json([
-            'message' => 'User registered successfully',
-            'user' => $user,
-        ], 201);
     }
 
     // User login
