@@ -16,6 +16,7 @@ class Election extends Model
         'start_time',
         'end_date',
         'end_time',
+        'is_active',
     ];
 
     public function candidates()

@@ -4,6 +4,7 @@ import axios from 'axios';
 const Election = () => {
   const [elections, setElections] = useState([]);
   const [activeElectionId, setActiveElectionId] = useState(null); // Track active election
+  const [activeElectionTitle, setActiveElectionTitle] = useState('');
   const [formData, setFormData] = useState({
     id: '',
     title: '',
@@ -41,9 +42,24 @@ const Election = () => {
       const response = await axios.get('http://localhost:8000/api/elections/active');
       if (response.data) {
         setActiveElectionId(response.data.id);
+        setActiveElectionTitle(response.data.title); // Update active election title
+        localStorage.setItem('activeElectionId', response.data.id);  // Store in local storage
+        localStorage.setItem('activeElectionTitle', response.data.title);  // Store in local storage
       }
     } catch (error) {
       console.error('Error fetching active election:', error);
+    }
+  };
+
+  const handleSetActive = async (electionId, electionTitle) => {
+    try {
+      await axios.post(`http://localhost:8000/api/elections/set-active/${electionId}`);
+      setActiveElectionId(electionId);
+      setActiveElectionTitle(electionTitle);
+      localStorage.setItem('activeElectionId', electionId); // Store in local storage
+      localStorage.setItem('activeElectionTitle', electionTitle); // Store in local storage
+    } catch (error) {
+      console.error('Error setting active election:', error);
     }
   };
 
@@ -98,16 +114,6 @@ const Election = () => {
     setIsEditing(true);
   };
 
-  const handleSetActive = async (electionId) => {
-    try {
-      await axios.post(`http://localhost:8000/api/elections/${electionId}/set-active`);
-      setActiveElectionId(electionId); // Set the active election ID locally
-      logAuditAction('Election Set Active', `Set election as active: ${electionId}`);
-    } catch (error) {
-      console.error('Error setting active election:', error);
-    }
-  };
-
   const resetForm = () => {
     setFormData({
       id: '',
@@ -123,6 +129,7 @@ const Election = () => {
 
   return (
     <div className="max-w-4xl px-4 py-8 mx-auto">
+      <h1 className="mb-4 text-2xl font-bold">Active Election: {activeElectionTitle || 'No Active Election'}</h1>
       <h1 className="mb-4 text-2xl font-bold">{isEditing ? 'Edit Election' : 'Add Election'}</h1>
       <form onSubmit={handleSubmit} className="px-8 pt-6 pb-8 mb-4 bg-white rounded shadow-md">
         <input
@@ -187,15 +194,16 @@ const Election = () => {
       <ul className="space-y-2">
         {elections.map((election) => (
           <li key={election.id} className={`relative border p-4 rounded bg-white shadow ${activeElectionId === election.id ? 'bg-green-200' : ''}`}>
+            {/* Edit Button */}
             <button
-              onClick={() => handleEdit(election)}
+              onClick={() => handleEdit(election)} // This will call the handleEdit function
               className="absolute px-4 py-2 text-white bg-yellow-500 rounded top-2 right-2"
             >
               Edit
             </button>
             <button
-              onClick={() => handleSetActive(election.id)}
-              className="absolute px-4 py-2 text-white bg-blue-500 rounded top-2 left-2"
+              onClick={() => handleSetActive(election.id, election.title)}
+              className="absolute px-4 py-2 text-white bg-blue-500 rounded bottom-2 right-2"
               disabled={activeElectionId === election.id}
             >
               {activeElectionId === election.id ? 'Active' : 'Set Active'}
