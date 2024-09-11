@@ -42,7 +42,7 @@ Route::get('/getConstituenciesByDistrictName', [ConstituencyController::class, '
 Route::get('/elections', [ElectionController::class, 'index']);
 Route::post('/elections', [ElectionController::class, 'store']);
 Route::put('/elections/{id}', [ElectionController::class, 'update']);
-Route::post('/elections/{id}/set-active', [ElectionController::class, 'setActiveElection']);
+Route::post('/elections/set-active/{id}', [ElectionController::class, 'setActiveElection']);
 Route::get('/elections/active', [ElectionController::class, 'getActiveElection']);
 
 // Candidate Module
@@ -55,7 +55,7 @@ Route::delete('/candidates/{id}', [CandidateController::class, 'destroy']);
 // Vote Module
 Route::post('/votes', [VoteController::class, 'store']);
 Route::get('/votes/{userId}', [VoteController::class, 'checkVote']);
-Route::get('/elections/{id}/results', [VoteController::class, 'getResults']);
+Route::get('/elections/{id}/results', [VoteController::class, 'getResultsByDistrictAndConstituency']);
 
 // Audit Logs Module
 Route::get('/audit-logs', [AuditLogController::class, 'index']);

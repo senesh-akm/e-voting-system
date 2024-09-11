@@ -47,13 +47,13 @@ class VoteController extends Controller
     }
 
     // Result monitoring on votes for candidates
-    public function getResults($electionId)
+    public function getResultsByDistrictAndConstituency($electionId)
     {
+        // Fetch votes grouped by candidate, district, and constituency
         $results = DB::table('votes')
-            ->select('candidate_id', DB::raw('count(*) as total_votes'))
+            ->select('candidate_id', 'district', 'constituency', DB::raw('count(*) as total_votes'))
             ->where('election_id', $electionId)
-            ->groupBy('candidate_id')
-            ->with('candidate') // Assuming you have a relationship to get candidate details
+            ->groupBy('candidate_id', 'district', 'constituency')
             ->get();
 
         return response()->json($results);

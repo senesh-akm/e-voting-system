@@ -1,14 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Bar, Pie } from 'react-chartjs-2';
-import 'chart.js/auto'; // This is important for auto-registration of charts
+import { Bar } from 'react-chartjs-2';
+import 'chart.js/auto';
 
 const Results = ({ electionId }) => {
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [activeElectionTitle, setActiveElectionTitle] = useState('');
 
-  // Fetch vote results from the API
+  // Fetch vote results and election title
   useEffect(() => {
+    const electionTitle = localStorage.getItem('activeElectionTitle');
+    if (electionTitle) {
+      setActiveElectionTitle(electionTitle);
+    }
+
     const fetchResults = async () => {
       try {
         const response = await axios.get(`http://localhost:8000/api/elections/${electionId}/results`);
@@ -24,17 +30,29 @@ const Results = ({ electionId }) => {
   }, [electionId]);
 
   // Prepare data for the chart
-  const chartData = {
-    labels: results.map((result) => `Candidate ${result.candidate_id}`), // Update to use candidate name if available
-    datasets: [
-      {
-        label: 'Votes',
-        data: results.map((result) => result.total_votes),
-        backgroundColor: ['#4A90E2', '#50E3C2', '#F5A623', '#D0021B', '#BD10E0'],
-        borderColor: ['#357ABD', '#4DC4B6', '#F59E23', '#C11C1E', '#A00CB2'],
+  const prepareChartData = () => {
+    const districts = [...new Set(results.map(result => result.district))];
+    const candidates = [...new Set(results.map(result => result.candidate_id))];
+
+    const datasets = candidates.map(candidateId => {
+      const candidateVotes = districts.map(district => {
+        const voteData = results.find(result => result.district === district && result.candidate_id === candidateId);
+        return voteData ? voteData.total_votes : 0;
+      });
+
+      return {
+        label: `Candidate ${candidateId}`, // You can fetch candidate name here instead of ID
+        data: candidateVotes,
+        backgroundColor: '#' + Math.floor(Math.random()*16777215).toString(16), // Random color
+        borderColor: '#' + Math.floor(Math.random()*16777215).toString(16),
         borderWidth: 1,
-      },
-    ],
+      };
+    });
+
+    return {
+      labels: districts, // Each district as a label
+      datasets,
+    };
   };
 
   if (loading) {
@@ -43,14 +61,21 @@ const Results = ({ electionId }) => {
 
   return (
     <div className="max-w-4xl mx-auto mt-10">
-      <h2 className="text-2xl font-bold text-center mb-6">Election Results</h2>
+      <h1 className="mb-7 text-4xl font-bold">{activeElectionTitle}</h1>
+      <h2 className="text-2xl font-bold mb-6">Votes by District and Constituency</h2>
 
+      {/* Chart for displaying results */}
       <div className="mb-6">
-        <Bar data={chartData} />
+        <Bar data={prepareChartData()} />
       </div>
 
       <div>
-        <Pie data={chartData} />
+        {results.map((result, index) => (
+          <div key={index} className="mb-4 p-4 border rounded">
+            <h3>Candidate {result.candidate_id} - {result.district}, {result.constituency}</h3>
+            <p>Total Votes: {result.total_votes}</p>
+          </div>
+        ))}
       </div>
     </div>
   );

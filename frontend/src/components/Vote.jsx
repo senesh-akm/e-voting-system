@@ -6,9 +6,15 @@ const Vote = () => {
   const [candidates, setCandidates] = useState([]);
   const [parties, setParties] = useState([]);
   const [votedCandidateId, setVotedCandidateId] = useState(null);
+  const [activeElectionTitle, setActiveElectionTitle] = useState('');
 
-  // Fetch user data
+  // Fetch user data and active election title from localStorage
   useEffect(() => {
+    const electionTitle = localStorage.getItem('activeElectionTitle');
+    if (electionTitle) {
+      setActiveElectionTitle(electionTitle);
+    }
+
     const fetchUserData = async () => {
       try {
         const userData = JSON.parse(localStorage.getItem('user'));
@@ -83,7 +89,7 @@ const Vote = () => {
 
   return (
     <div>
-      <h1 className="text-4xl font-bold mb-7">Presidential Election 2024</h1>
+      <h1 className="text-4xl font-bold mb-7">{activeElectionTitle}</h1>
       
       {/* Display user details */}
       <h2><span className="font-bold">Your Name:</span> {user.name || 'Name not available'}</h2>
