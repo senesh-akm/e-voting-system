@@ -71,19 +71,31 @@ const Vote = () => {
 
   const handleVote = async (candidateId) => {
     try {
+      const electionId = localStorage.getItem('activeElectionId'); // Fetch the active election ID
+
+      if (!electionId) {
+        console.error("No active election found.");
+        return;
+      }
+
       await axios.post('http://localhost:8000/api/votes', {
         user_id: user.id,
         candidate_id: candidateId,
-        election_id: 1, // Assuming election ID is 1 for this example
+        election_id: electionId,  // Use the active election ID dynamically
         district: user.district,
         constituency: user.constituency
       });
+
       setVotedCandidateId(candidateId); // Set the voted candidate ID after successful vote
-      
+
       // Log the voting action in the audit log
       logAuditAction('Vote Cast', `User voted for candidate ID: ${candidateId}`);
     } catch (error) {
-      console.error("Error voting:", error);
+      if (error.response && error.response.status === 403) {
+        alert('You have already voted in this election.');
+      } else {
+        console.error("Error voting:", error);
+      }
     }
   };
 
