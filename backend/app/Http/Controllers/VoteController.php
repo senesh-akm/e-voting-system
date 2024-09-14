@@ -48,13 +48,20 @@ class VoteController extends Controller
     }
 
     // Result monitoring on votes for candidates
-    public function getElectionResults($electionId)
+    public function getElectionResults($electionId, Request $request)
     {
+        $constituency = $request->query('constituency');
+
+        // Fetch candidates for the election
         $candidates = Candidate::where('election_id', $electionId)->get();
-        $results = $candidates->map(function ($candidate) use ($electionId) {
+
+        // Calculate vote count for each candidate filtered by constituency
+        $results = $candidates->map(function ($candidate) use ($electionId, $constituency) {
             $votes = Vote::where('candidate_id', $candidate->id)
                         ->where('election_id', $electionId)
+                        ->where('constituency', $constituency) // Filter by constituency
                         ->count();
+
             return [
                 'candidate' => $candidate,
                 'votes' => $votes
