@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Candidate;
 use App\Models\Vote;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -47,14 +48,18 @@ class VoteController extends Controller
     }
 
     // Result monitoring on votes for candidates
-    public function getResultsByDistrictAndConstituency($electionId)
+    public function getElectionResults($electionId)
     {
-        // Fetch votes grouped by candidate, district, and constituency
-        $results = DB::table('votes')
-            ->select('candidate_id', 'district', 'constituency', DB::raw('count(*) as total_votes'))
-            ->where('election_id', $electionId)
-            ->groupBy('candidate_id', 'district', 'constituency')
-            ->get();
+        $candidates = Candidate::where('election_id', $electionId)->get();
+        $results = $candidates->map(function ($candidate) use ($electionId) {
+            $votes = Vote::where('candidate_id', $candidate->id)
+                        ->where('election_id', $electionId)
+                        ->count();
+            return [
+                'candidate' => $candidate,
+                'votes' => $votes
+            ];
+        });
 
         return response()->json($results);
     }
