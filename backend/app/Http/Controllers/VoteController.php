@@ -70,4 +70,17 @@ class VoteController extends Controller
 
         return response()->json($results);
     }
+
+    public function getVotersCount(Request $request)
+    {
+        $constituencyName = $request->input('constituency');
+
+        // Assuming voters are stored in the `users` table with a 'voter' role
+        $votersCount = DB::table('users')
+            ->where('role', 'voter')
+            ->where('constituency', $constituencyName)
+            ->count();
+
+        return response()->json(['voters_count' => $votersCount]);
+    }
 }
