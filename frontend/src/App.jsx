@@ -23,13 +23,13 @@ const AppLayout = ({ children }) => {
   const isAuthPage = location.pathname === '/' || location.pathname === '/register';
 
   return (
-    <div className="flex h-screen">
-      {!isAuthPage && <LeftSideNavbar />}
-
-      <div className={`flex flex-col flex-grow ${isAuthPage ? '' : 'ml-64'}`}>
-        {!isAuthPage && <TopNavbar />}
-
-        <div className="flex-grow p-6 bg-gray-100">
+    <div className="app-layout"> {/* Apply app-layout CSS */}
+      {!isAuthPage && <TopNavbar className="top-navbar" />} {/* Keep TopNavbar fixed */}
+      
+      <div className="flex flex-grow">
+        {!isAuthPage && <LeftSideNavbar className="left-sidebar" />} {/* LeftSidebar is scrollable */}
+        
+        <div className="content"> {/* Only content will be scrollable */}
           {children}
         </div>
       </div>

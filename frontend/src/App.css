@@ -2,6 +2,40 @@
   text-align: center;
 }
 
+.app-layout {
+  display: flex;
+  flex-direction: column;
+  height: 100vh; /* Full height of the viewport */
+}
+
+.flex-grow {
+  display: flex;
+  flex-grow: 1;
+  overflow: hidden; /* Hide overflow to control scrolling within elements */
+}
+
+.top-navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+}
+
+.left-sidebar {
+  width: 250px;
+  overflow-y: auto; /* Enable scrolling within the sidebar */
+  position: relative;
+  top: 60px; /* Adjust to be beneath the TopNavbar */
+}
+
+.content {
+  flex-grow: 1;
+  overflow-y: auto; /* Allow scrolling within the main content */
+  padding: 20px;
+  height: calc(100vh - 60px); /* Height minus the TopNavbar */
+}
+
 .App-logo {
   height: 40vmin;
   pointer-events: none;
