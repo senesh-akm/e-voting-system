@@ -17,19 +17,18 @@ import Profile from './components/auth/Profile';
 import Vote from './components/Vote';
 import AuditLogs from './components/AuditLog';
 import Results from './components/Results';
+import PrivateRoute from './components/PrivateRoute'; // Import the PrivateRoute component
 
 const AppLayout = ({ children }) => {
   const location = useLocation();
   const isAuthPage = location.pathname === '/' || location.pathname === '/register';
 
   return (
-    <div className="app-layout"> {/* Apply app-layout CSS */}
-      {!isAuthPage && <TopNavbar className="top-navbar" />} {/* Keep TopNavbar fixed */}
-      
+    <div className="app-layout">
+      {!isAuthPage && <TopNavbar className="top-navbar" />}
       <div className="flex flex-grow">
-        {!isAuthPage && <LeftSideNavbar className="left-sidebar" />} {/* LeftSidebar is scrollable */}
-        
-        <div className="content"> {/* Only content will be scrollable */}
+        {!isAuthPage && <LeftSideNavbar className="left-sidebar" />}
+        <div className="content">
           {children}
         </div>
       </div>
@@ -54,19 +53,92 @@ const App = () => {
     <Router>
       <AppLayout>
         <Routes>
-          <Route path="/" element={<Login setUserRole={setUserRole} />} /> {/* Pass setUserRole to Login */}
+          {/* Public Routes */}
+          <Route path="/" element={<Login setUserRole={setUserRole} />} />
           <Route path="/register" element={<Register />} />
           <Route path="/logout" element={<Logout setMessage={setMessage} />} />
-          <Route path="/dashboard" element={<Dashboard userRole={userRole} />} />
-          <Route path="/parties" element={<Parties />} />
-          <Route path="/districts" element={<District />} />
-          <Route path="/constituencies" element={<Constituency />} />
-          <Route path="/elections" element={<Election />} />
-          <Route path="/candidates" element={<Candidate />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/votes" element={<Vote />} />
-          <Route path="/audit-logs" element={<AuditLogs />} />
-          <Route path="/results" element={<Results />} />
+
+          {/* Private Routes for Admin */}
+          <Route
+            path="/dashboard"
+            element={
+              <PrivateRoute allowedRoles={['admin', 'voter']} userRole={userRole}>
+                <Dashboard userRole={userRole} />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/parties"
+            element={
+              <PrivateRoute allowedRoles={['admin']} userRole={userRole}>
+                <Parties />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/districts"
+            element={
+              <PrivateRoute allowedRoles={['admin']} userRole={userRole}>
+                <District />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/constituencies"
+            element={
+              <PrivateRoute allowedRoles={['admin']} userRole={userRole}>
+                <Constituency />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/elections"
+            element={
+              <PrivateRoute allowedRoles={['admin']} userRole={userRole}>
+                <Election />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/candidates"
+            element={
+              <PrivateRoute allowedRoles={['admin']} userRole={userRole}>
+                <Candidate />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/profile"
+            element={
+              <PrivateRoute allowedRoles={['admin', 'voter']} userRole={userRole}>
+                <Profile />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/votes"
+            element={
+              <PrivateRoute allowedRoles={['admin', 'voter']} userRole={userRole}>
+                <Vote />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/audit-logs"
+            element={
+              <PrivateRoute allowedRoles={['admin', 'voter']} userRole={userRole}>
+                <AuditLogs />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/results"
+            element={
+              <PrivateRoute allowedRoles={['admin']} userRole={userRole}>
+                <Results />
+              </PrivateRoute>
+            }
+          />
         </Routes>
 
         {/* Message Display */}
