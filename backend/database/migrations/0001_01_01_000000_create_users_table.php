@@ -23,6 +23,7 @@ return new class extends Migration
             $table->string('address')->nullable();
             $table->string('district')->nullable();
             $table->string('constituency')->nullable();
+            $table->string('theme')->default('light');
             $table->timestamps();
         });
 
