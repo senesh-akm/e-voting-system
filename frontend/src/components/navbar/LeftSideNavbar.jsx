@@ -13,18 +13,38 @@ import {
   CogIcon,
 } from "@heroicons/react/outline"; // Importing Heroicons
 
-const LeftSideNavbar = () => {
+const LeftSideNavbar = ({ userRole }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
 
+  // Links available for all users
+  const commonLinks = [
+    { to: "/dashboard", label: "Dashboard", icon: <HomeIcon className="w-5 h-5" /> },
+    { to: "/profile", label: "Profile", icon: <UserCircleIcon className="w-5 h-5" /> },
+    { to: "/audit-logs", label: "Activity Logs", icon: <DocumentTextIcon className="w-5 h-5" /> },
+    { to: "/votes", label: "Voting", icon: <ChartBarIcon className="w-5 h-5" /> },
+  ];
+
+  // Additional links for admin users
+  const adminLinks = [
+    { to: "/parties", label: "Party", icon: <FlagIcon className="w-5 h-5" /> },
+    { to: "/districts", label: "District", icon: <MapIcon className="w-5 h-5" /> },
+    { to: "/constituencies", label: "Constituency", icon: <OfficeBuildingIcon className="w-5 h-5" /> },
+    { to: "/elections", label: "Election", icon: <UserGroupIcon className="w-5 h-5" /> },
+    { to: "/candidates", label: "Candidate", icon: <ClipboardListIcon className="w-5 h-5" /> },
+    { to: "/results", label: "Results", icon: <ChartBarIcon className="w-5 h-5" /> },
+  ];
+
+  const linksToDisplay = userRole === "admin" ? [...commonLinks, ...adminLinks] : commonLinks;
+
   return (
     <div className="flex">
       {/* Mobile Menu Button */}
       <div className="md:hidden flex items-center justify-between p-4 bg-gray-100 border-b">
-        <div className="text-xl font-bold text-blue-500">MyApp</div>
+        <div className="text-xl font-bold text-blue-500">My App</div>
         <button
           className="text-gray-600 focus:outline-none"
           onClick={toggleSidebar}
@@ -40,11 +60,7 @@ const LeftSideNavbar = () => {
               strokeLinecap="round"
               strokeLinejoin="round"
               strokeWidth="2"
-              d={
-                isSidebarOpen
-                  ? "M6 18L18 6M6 6l12 12"
-                  : "M4 6h16M4 12h16M4 18h16"
-              }
+              d={isSidebarOpen ? "M6 18L18 6M6 6l12 12" : "M4 6h16M4 12h16M4 18h16"}
             />
           </svg>
         </button>
@@ -63,76 +79,18 @@ const LeftSideNavbar = () => {
 
         {/* Sidebar Links */}
         <div className="flex flex-col space-y-4">
-          <Link
-            to="/dashboard"
-            className="flex items-center px-4 py-2 text-gray-600 transition-colors duration-200 transform rounded-md hover:bg-blue-200 hover:text-blue-500"
-          >
-            <HomeIcon className="w-5 h-5" />
-            <span className="mx-4 font-medium">Dashboard</span>
-          </Link>
-          <Link
-            to="/profile"
-            className="flex items-center px-4 py-2 text-gray-600 transition-colors duration-200 transform rounded-md hover:bg-blue-200 hover:text-blue-500"
-          >
-            <UserCircleIcon className="w-5 h-5" />
-            <span className="mx-4 font-medium">Profile</span>
-          </Link>
-          <Link
-            to="/audit-logs"
-            className="flex items-center px-4 py-2 text-gray-600 transition-colors duration-200 transform rounded-md hover:bg-blue-200 hover:text-blue-500"
-          >
-            <DocumentTextIcon className="w-5 h-5" />
-            <span className="mx-4 font-medium">Activity Logs</span>
-          </Link>
-          <Link
-            to="/votes"
-            className="flex items-center px-4 py-2 text-gray-600 transition-colors duration-200 transform rounded-md hover:bg-blue-200 hover:text-blue-500"
-          >
-            <ChartBarIcon className="w-5 h-5" />
-            <span className="mx-4 font-medium">Voting</span>
-          </Link>
-          <Link
-            to="/parties"
-            className="flex items-center px-4 py-2 text-gray-600 transition-colors duration-200 transform rounded-md hover:bg-blue-200 hover:text-blue-500"
-          >
-            <FlagIcon className="w-5 h-5" />
-            <span className="mx-4 font-medium">Party</span>
-          </Link>
-          <Link
-            to="/districts"
-            className="flex items-center px-4 py-2 text-gray-600 transition-colors duration-200 transform rounded-md hover:bg-blue-200 hover:text-blue-500"
-          >
-            <MapIcon className="w-5 h-5" />
-            <span className="mx-4 font-medium">District</span>
-          </Link>
-          <Link
-            to="/constituencies"
-            className="flex items-center px-4 py-2 text-gray-600 transition-colors duration-200 transform rounded-md hover:bg-blue-200 hover:text-blue-500"
-          >
-            <OfficeBuildingIcon className="w-5 h-5" />
-            <span className="mx-4 font-medium">Constituency</span>
-          </Link>
-          <Link
-            to="/elections"
-            className="flex items-center px-4 py-2 text-gray-600 transition-colors duration-200 transform rounded-md hover:bg-blue-200 hover:text-blue-500"
-          >
-            <UserGroupIcon className="w-5 h-5" />
-            <span className="mx-4 font-medium">Election</span>
-          </Link>
-          <Link
-            to="/candidates"
-            className="flex items-center px-4 py-2 text-gray-600 transition-colors duration-200 transform rounded-md hover:bg-blue-200 hover:text-blue-500"
-          >
-            <ClipboardListIcon className="w-5 h-5" />
-            <span className="mx-4 font-medium">Candidate</span>
-          </Link>
-          <Link
-            to="/results"
-            className="flex items-center px-4 py-2 text-gray-600 transition-colors duration-200 transform rounded-md hover:bg-blue-200 hover:text-blue-500"
-          >
-            <ChartBarIcon className="w-5 h-5" />
-            <span className="mx-4 font-medium">Results</span>
-          </Link>
+          {linksToDisplay.map((link, index) => (
+            <Link
+              key={index}
+              to={link.to}
+              className="flex items-center px-4 py-2 text-gray-600 transition-colors duration-200 transform rounded-md hover:bg-blue-200 hover:text-blue-500"
+            >
+              {link.icon}
+              <span className="mx-4 font-medium">{link.label}</span>
+            </Link>
+          ))}
+
+          {/* Settings Link (Displayed at the end for all users) */}
           <Link
             to="/settings"
             className="flex items-center px-4 py-2 text-gray-600 transition-colors duration-200 transform rounded-md hover:bg-blue-200 hover:text-blue-500"
@@ -145,10 +103,7 @@ const LeftSideNavbar = () => {
 
       {/* Overlay for mobile when sidebar is open */}
       {isSidebarOpen && (
-        <div
-          className="fixed inset-0 z-20 bg-black opacity-50 md:hidden"
-          onClick={toggleSidebar}
-        ></div>
+        <div className="fixed inset-0 z-20 bg-black opacity-50 md:hidden" onClick={toggleSidebar}></div>
       )}
     </div>
   );
