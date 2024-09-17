@@ -7,7 +7,7 @@ import Login from "./components/auth/Login";
 import Logout from "./components/auth/Logout";
 import Dashboard from "./components/Dashboard";
 import TopNavbar from "./components/navbar/TopNavbar";
-import LeftSideNavbar from "./components/navbar/LeftSideNavbar";
+import LeftSideNavbar from "./components/navbar/LeftSideNavbar";  // Import LeftSideNavbar
 import Parties from "./components/Party";
 import District from './components/District';
 import Constituency from "./components/Constituency";
@@ -19,7 +19,7 @@ import AuditLogs from './components/AuditLog';
 import Results from './components/Results';
 import PrivateRoute from './components/PrivateRoute'; // Import the PrivateRoute component
 
-const AppLayout = ({ children }) => {
+const AppLayout = ({ children, userRole }) => {  // Add userRole as a prop
   const location = useLocation();
   const isAuthPage = location.pathname === '/' || location.pathname === '/register';
 
@@ -27,7 +27,7 @@ const AppLayout = ({ children }) => {
     <div className="app-layout">
       {!isAuthPage && <TopNavbar className="top-navbar" />}
       <div className="flex flex-grow">
-        {!isAuthPage && <LeftSideNavbar className="left-sidebar" />}
+        {!isAuthPage && <LeftSideNavbar userRole={userRole} className="left-sidebar" />} {/* Pass userRole here */}
         <div className="content">
           {children}
         </div>
@@ -51,7 +51,7 @@ const App = () => {
 
   return (
     <Router>
-      <AppLayout>
+      <AppLayout userRole={userRole}> {/* Pass userRole to AppLayout */}
         <Routes>
           {/* Public Routes */}
           <Route path="/" element={<Login setUserRole={setUserRole} />} />
