@@ -24,7 +24,7 @@ class AdminSeeder extends Seeder
             'address' => '',
             'district' => '',
             'constituency' => '',
-            'theme' => 'dark', // Optionally set a theme for admin
+            'theme' => 1, // Optionally set a theme for admin
         ]);
     }
 }
