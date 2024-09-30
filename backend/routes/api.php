@@ -7,20 +7,16 @@ use App\Http\Controllers\ConstituencyController;
 use App\Http\Controllers\DistrictController;
 use App\Http\Controllers\ElectionController;
 use App\Http\Controllers\PartyController;
+use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\VoteController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-
-// Route::get('/user', function (Request $request) {
-//     return $request->user();
-// })->middleware('auth:sanctum');
 
 // User Authentication Module
 Route::post('/register', [AuthController::class, 'register']);
 Route::put('/update/{id}', [AuthController::class, 'update']);
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout']);
-// Route::get('/profile', [AuthController::class, 'profile'])->middleware('auth:sanctum');
 
 // Party Module
 Route::get('/parties', [PartyController::class, 'index']);
@@ -61,3 +57,5 @@ Route::get('/votersCount', [VoteController::class, 'getVotersCount']);
 // Audit Logs Module
 Route::get('/audit-logs', [AuditLogController::class, 'index']);
 Route::post('/audit-logs', [AuditLogController::class, 'store']);
+
+Route::put('/users/{id}/settings', [SettingsController::class, 'updateSettings']);
