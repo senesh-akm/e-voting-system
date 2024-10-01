@@ -17,6 +17,7 @@ import Profile from './components/auth/Profile';
 import Vote from './components/Vote';
 import AuditLogs from './components/AuditLog';
 import Results from './components/Results';
+import Settings from './components/Settings';
 import PrivateRoute from './components/PrivateRoute'; // Import the PrivateRoute component
 
 const AppLayout = ({ children, userRole }) => {  // Add userRole as a prop
@@ -136,6 +137,14 @@ const App = () => {
             element={
               <PrivateRoute allowedRoles={['admin']} userRole={userRole}>
                 <Results />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/settings"
+            element={
+              <PrivateRoute allowedRoles={['admin', 'voter']} userRole={userRole}>
+                <Settings />
               </PrivateRoute>
             }
           />

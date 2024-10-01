@@ -106,11 +106,11 @@ const Party = () => {
   }, []);
 
   return (
-    <div className="flex flex-wrap justify-center p-8">
-      {/* Left column for Add/Edit Party form */}
-      <div className="w-full p-6 mb-6 bg-white rounded-lg shadow-md md:w-1/2 lg:w-2/5 md:mb-0 md:mr-4">
+    <div className="p-8 flex flex-col items-center space-y-8"> {/* Stack the two cards vertically with spacing */}
+      {/* Add/Edit Party Card */}
+      <div className="w-full p-6 bg-white rounded-lg shadow-md md:w-3/4 lg:w-2/3 xl:w-1/2"> {/* Card for Adding/Editing Party */}
         <h1 className="mb-4 text-2xl font-bold">{editPartyId ? 'Edit Party' : 'Add Party'}</h1>
-
+  
         {/* Form for adding or updating a party */}
         <form onSubmit={handleAddOrUpdateParty} className="mb-6">
           <div className="flex flex-col items-center">
@@ -144,11 +144,12 @@ const Party = () => {
           {message && <p className="mt-4 text-green-500">{message}</p>}
         </form>
       </div>
-
-      {/* Right column for Party List */}
-      <div className="w-full p-6 bg-white rounded-lg shadow-md md:w-1/2 lg:w-2/5">
+  
+      {/* Party List Card */}
+      <div className="w-full p-6 bg-white rounded-lg shadow-md md:w-3/4 lg:w-2/3 xl:w-1/2"> {/* Card for Party List */}
         <h2 className="mb-4 text-xl font-bold">Party List</h2>
-        <ul className="p-4 border rounded bg-gray-50">
+        <h3 className="text-lg font-bold mb-3">Number of Parties: {parties.length}</h3>
+        <ul className="p-4 border rounded bg-gray-50 h-96 overflow-y-auto"> {/* Scrollable Party List */}
           {parties.length > 0 ? (
             parties.map((party) => (
               <li key={party.id} className="flex items-center justify-between p-2 border-b">
@@ -176,7 +177,7 @@ const Party = () => {
         </ul>
       </div>
     </div>
-  );
+  );  
 };
 
 export default Party;

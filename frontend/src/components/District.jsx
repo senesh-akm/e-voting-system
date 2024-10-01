@@ -64,10 +64,11 @@ const District = () => {
   }, []);
 
   return (
-    <div className="p-8 flex justify-center"> {/* Center align the card */}
-      <div className="bg-white shadow-md rounded-lg p-6 w-full md:w-3/4 lg:w-2/3 xl:w-1/2"> {/* Card Container with increased width */}
+    <div className="p-8 flex flex-col items-center space-y-8"> {/* Stack the two cards vertically with spacing */}
+      {/* Add District Card */}
+      <div className="bg-white shadow-md rounded-lg p-6 w-full md:w-3/4 lg:w-2/3 xl:w-1/2"> {/* Card for Adding District */}
         <h1 className="text-2xl font-bold mb-4">Add District</h1>
-
+  
         {/* Form for adding a new district */}
         <form onSubmit={handleAddDistrict} className="mb-6">
           <div className="flex items-center">
@@ -88,10 +89,13 @@ const District = () => {
           </div>
           {message && <p className="mt-4 text-green-500">{message}</p>}
         </form>
+      </div>
 
-        {/* List of districts */}
+      {/* District List Card */}
+      <div className="bg-white shadow-md rounded-lg p-6 w-full md:w-3/4 lg:w-2/3 xl:w-1/2"> {/* Card for District List */}
         <h2 className="text-xl font-bold mb-4">District List</h2>
-        <ul className="border rounded p-4 bg-gray-50">
+        <h3 className="text-lg font-bold mb-3">Number of Districts: {districts.length}</h3>
+        <ul className="border rounded p-4 bg-gray-50 h-96 overflow-y-auto"> {/* Scrollable district list */}
           {districts.length > 0 ? (
             districts.map((district) => (
               <li key={district.id} className="border-b p-2">
