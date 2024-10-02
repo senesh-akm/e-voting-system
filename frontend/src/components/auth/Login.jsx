@@ -8,6 +8,7 @@ const Login = ({ setUserRole }) => {
   const [rememberMe, setRememberMe] = useState(false);
   const [message, setMessage] = useState("");
   const [isError, setIsError] = useState(false);
+  const [loading, setLoading] = useState(false); // New loading state
   const navigate = useNavigate();
 
   const logAudit = async (userId, action, description) => {
@@ -23,6 +24,7 @@ const Login = ({ setUserRole }) => {
   };
 
   const handleLogin = async (email, password) => {
+    setLoading(true); // Start loading when the login process begins
     try {
       const response = await axios.post("http://localhost:8000/api/login", {
         email,
@@ -32,16 +34,13 @@ const Login = ({ setUserRole }) => {
 
       if (response.status === 200) {
         const { user } = response.data;
-        // Save the user data to local storage
         localStorage.setItem("user", JSON.stringify(user));
-        // Update the userRole state in App component
         setUserRole(user.role);
         setMessage(response.data.message);
         setIsError(false);
 
         // Log the login action to the audit log
         await logAudit(user.id, "User Login", `${user.name} logged in`);
-
         navigate("/dashboard");
       } else {
         setMessage("Login failed");
@@ -51,6 +50,8 @@ const Login = ({ setUserRole }) => {
       setMessage("Login failed");
       setIsError(true);
       console.error("Error during login:", error);
+    } finally {
+      setLoading(false); // End loading when the login process finishes
     }
   };
 
@@ -83,6 +84,7 @@ const Login = ({ setUserRole }) => {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             className="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
+            disabled={loading} // Disable input when loading
           />
         </div>
         <div className="mb-4">
@@ -95,6 +97,7 @@ const Login = ({ setUserRole }) => {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             className="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
+            disabled={loading} // Disable input when loading
           />
         </div>
         <div className="flex items-center justify-between mb-4">
@@ -104,6 +107,7 @@ const Login = ({ setUserRole }) => {
               checked={rememberMe}
               onChange={(e) => setRememberMe(e.target.checked)}
               className="mr-2 leading-tight"
+              disabled={loading} // Disable checkbox when loading
             />
             <span className="text-sm text-gray-700">Remember Me</span>
           </label>
@@ -112,8 +116,9 @@ const Login = ({ setUserRole }) => {
           <button
             type="submit"
             className="w-full px-4 py-2 text-white bg-blue-500 rounded hover:bg-blue-700 focus:outline-none focus:shadow-outline"
+            disabled={loading} // Disable button when loading
           >
-            Login
+            {loading ? "Processing..." : "Login"} {/* Show "Processing..." when loading */}
           </button>
         </div>
       </form>

@@ -16,6 +16,7 @@ const Election = () => {
   });
   const [isEditing, setIsEditing] = useState(false);
   const [user, setUser] = useState({}); // Store user info for audit logging
+  const [isLoading, setIsLoading] = useState(false); // Track loading state
 
   useEffect(() => {
     fetchElections();
@@ -86,6 +87,7 @@ const Election = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsLoading(true); // Set loading to true when submitting
     try {
       if (isEditing) {
         await axios.put(`http://localhost:8000/api/elections/${formData.id}`, formData);
@@ -98,6 +100,8 @@ const Election = () => {
       resetForm();
     } catch (error) {
       console.error('Error submitting election:', error);
+    } finally {
+      setIsLoading(false); // Set loading back to false once submission is complete
     }
   };
 
@@ -180,8 +184,8 @@ const Election = () => {
           className="w-full p-2 mb-2 border"
           required
         />
-        <button type="submit" className="p-2 mt-2 text-white bg-blue-500 rounded">
-          {isEditing ? 'Update Election' : 'Add Election'}
+        <button type="submit" className="p-2 mt-2 text-white bg-blue-500 rounded" disabled={isLoading}>
+          {isLoading ? 'Processing...' : isEditing ? 'Update Election' : 'Add Election'}
         </button>
         {isEditing && (
           <button type="button" onClick={resetForm} className="p-2 mt-2 ml-2 text-white bg-gray-500 rounded">

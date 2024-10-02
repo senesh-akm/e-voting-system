@@ -43,10 +43,9 @@ const LeftSideNavbar = ({ userRole }) => {
   return (
     <div className="flex">
       {/* Mobile Menu Button */}
-      <div className="md:hidden flex items-center justify-between p-4 bg-gray-100 border-b">
-        <div className="text-xl font-bold text-blue-500">My App</div>
+      <div className="md:hidden fixed top-4 left-4 z-50">
         <button
-          className="text-gray-600 focus:outline-none"
+          className="text-gray-600 p-2 focus:outline-none bg-white rounded shadow"
           onClick={toggleSidebar}
         >
           <svg
@@ -84,6 +83,7 @@ const LeftSideNavbar = ({ userRole }) => {
               key={index}
               to={link.to}
               className="flex items-center px-4 py-2 text-gray-600 transition-colors duration-200 transform rounded-md hover:bg-blue-200 hover:text-blue-500"
+              onClick={() => setIsSidebarOpen(false)} // Close the sidebar after clicking a link
             >
               {link.icon}
               <span className="mx-4 font-medium">{link.label}</span>
@@ -94,6 +94,7 @@ const LeftSideNavbar = ({ userRole }) => {
           <Link
             to="/settings"
             className="flex items-center px-4 py-2 text-gray-600 transition-colors duration-200 transform rounded-md hover:bg-blue-200 hover:text-blue-500"
+            onClick={() => setIsSidebarOpen(false)} // Close the sidebar after clicking
           >
             <CogIcon className="w-5 h-5" />
             <span className="mx-4 font-medium">Settings</span>

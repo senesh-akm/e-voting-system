@@ -30,8 +30,17 @@ const District = () => {
 
       // Log the district addition to the audit log
       await logAuditAction('Add District', `Added district: ${districtName}`);
+
+      // Clear the message after 5 seconds
+      setTimeout(() => {
+        setMessage('');
+      }, 5000);
     } catch (error) {
       setMessage('Error adding district. Make sure the district name is unique.');
+      // Clear the message after 5 seconds
+      setTimeout(() => {
+        setMessage('');
+      }, 5000);
     }
   };
 

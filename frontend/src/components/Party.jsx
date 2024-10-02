@@ -105,6 +105,17 @@ const Party = () => {
     fetchParties();
   }, []);
 
+  // Effect to clear the message after 5 seconds
+  useEffect(() => {
+    if (message) {
+      const timer = setTimeout(() => {
+        setMessage('');
+      }, 5000); // Clear message after 5 seconds
+
+      return () => clearTimeout(timer); // Cleanup the timer if component unmounts or message changes
+    }
+  }, [message]);
+
   return (
     <div className="p-8 flex flex-col items-center space-y-8"> {/* Stack the two cards vertically with spacing */}
       {/* Add/Edit Party Card */}
