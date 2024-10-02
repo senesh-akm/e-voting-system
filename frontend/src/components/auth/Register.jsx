@@ -38,7 +38,6 @@ const Register = () => {
   }, []);
 
   // Fetch constituencies when a district is selected
-  // Fetch constituencies when a district is selected
   useEffect(() => {
     if (formData.district) {
       const fetchConstituencies = async () => {

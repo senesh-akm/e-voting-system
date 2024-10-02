@@ -73,8 +73,17 @@ const Constituency = () => {
 
       // Log the constituency addition to the audit log
       await logAuditAction('Add Constituency', `Added constituency: ${name} to district ID: ${districtId}`);
+
+      // Clear the message after 5 seconds
+      setTimeout(() => {
+        setMessage('');
+      }, 5000);
     } catch (error) {
       setMessage('Error adding constituency. Make sure the name is unique and district exists.');
+      // Clear the message after 5 seconds in case of an error too
+      setTimeout(() => {
+        setMessage('');
+      }, 5000);
     }
   };
 

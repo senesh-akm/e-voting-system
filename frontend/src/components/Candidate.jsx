@@ -11,10 +11,11 @@ const Candidate = () => {
     party: '',
     biography: '',
     election_id: '',
-    candidate_picture: null, // Added field for image
+    candidate_picture: null,
   });
   const [isEditing, setIsEditing] = useState(false);
-  const [user, setUser] = useState(null); // Store logged-in user info for audit log
+  const [loading, setLoading] = useState(false); // Loading state
+  const [user, setUser] = useState(null);
 
   // Fetch logged-in user from localStorage
   useEffect(() => {
@@ -61,7 +62,7 @@ const Candidate = () => {
   const logAuditAction = async (action, description) => {
     try {
       await axios.post('http://localhost:8000/api/audit-logs', {
-        user_id: user.id, // Use the logged-in user ID
+        user_id: user.id,
         action,
         description,
       });
@@ -81,19 +82,21 @@ const Candidate = () => {
   const handleFileChange = (e) => {
     setFormData((prev) => ({
       ...prev,
-      candidate_picture: e.target.files[0], // Handle file input
+      candidate_picture: e.target.files[0],
     }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true); // Set loading to true when form submission starts
+
     const data = new FormData();
     data.append('name', formData.name);
     data.append('party', formData.party);
     data.append('biography', formData.biography);
     data.append('election_id', formData.election_id);
     if (formData.candidate_picture) {
-      data.append('candidate_picture', formData.candidate_picture); // Append image if it exists
+      data.append('candidate_picture', formData.candidate_picture);
     }
 
     try {
@@ -108,6 +111,8 @@ const Candidate = () => {
       resetForm();
     } catch (error) {
       console.error('Error submitting candidate:', error);
+    } finally {
+      setLoading(false); // Set loading back to false when form submission is complete
     }
   };
 
@@ -118,7 +123,7 @@ const Candidate = () => {
       party: candidate.party,
       biography: candidate.biography,
       election_id: candidate.election_id,
-      candidate_picture: null, // Reset the picture when editing
+      candidate_picture: null,
     });
     setIsEditing(true);
   };
@@ -140,7 +145,7 @@ const Candidate = () => {
       party: '',
       biography: '',
       election_id: '',
-      candidate_picture: null, // Reset file input
+      candidate_picture: null,
     });
     setIsEditing(false);
   };
@@ -199,8 +204,12 @@ const Candidate = () => {
             </option>
           ))}
         </select>
-        <button type="submit" className="bg-blue-500 text-white p-2 rounded mt-2">
-          {isEditing ? 'Update Candidate' : 'Add Candidate'}
+        <button
+          type="submit"
+          className="bg-blue-500 text-white p-2 rounded mt-2"
+          disabled={loading} // Disable button while loading
+        >
+          {loading ? 'Processing...' : isEditing ? 'Update Candidate' : 'Add Candidate'}
         </button>
         {isEditing && (
           <button type="button" onClick={resetForm} className="bg-gray-500 text-white p-2 rounded mt-2 ml-2">
