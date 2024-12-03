@@ -169,7 +169,7 @@ const Party = () => {
                     <img
                       src={`http://localhost:8000/storage/${party.party_logo}`} // Adjust the path based on your backend
                       alt={`${party.name} logo`}
-                      className="w-8 h-8 mr-2"
+                      className="w-10 h-10 mr-2"
                     />
                   )}
                   <span>{party.name}</span>
