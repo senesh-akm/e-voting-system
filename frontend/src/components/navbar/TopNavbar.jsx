@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom"; // For navigation
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 const TopNavbar = () => {
@@ -95,10 +95,10 @@ const TopNavbar = () => {
           ref={dropdownRef}
           className={`absolute right-0 mt-2 w-48 bg-white rounded shadow-md ${isDropdownOpen ? "block" : "hidden"}`}
         >
-          <button className="block w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100">
+          <button className="block w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100" to="/profile">
             Profile
           </button>
-          <button className="block w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100">
+          <button className="block w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100" to="/settings">
             Settings
           </button>
           <button
